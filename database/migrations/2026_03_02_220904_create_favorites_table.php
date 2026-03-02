@@ -12,15 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('favorites', function (Blueprint $table) {
-            $table->id('id');
-            $table->unsignedInteger('patient_id');
-            $table->unsignedInteger('doctor_id');
+            $table->id();
+
+            $table->foreignId('patient_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('doctor_id')->constrained('doctors')->cascadeOnDelete();
+
+            $table->unique(['patient_id', 'doctor_id']);
 
             $table->timestamps();
-
-            $table->foreign('patient_id')->references('id')->on('users');
-            $table->foreign('doctor_id')->references('id')->on('doctors');
-            $table->primary(['patient_id', 'doctor_id']);
         });
     }
 
