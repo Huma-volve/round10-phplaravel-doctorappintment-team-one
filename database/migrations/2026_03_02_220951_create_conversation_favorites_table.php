@@ -19,7 +19,6 @@ return new class extends Migration
 
             $table->unique(['user_id','conversation_id']);
             $table->timestamp('created_at');
-
         });
     }
 

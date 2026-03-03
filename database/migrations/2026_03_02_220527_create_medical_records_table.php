@@ -23,7 +23,6 @@ return new class extends Migration {
             $table->integer('follow_up_after_days');
             $table->timestamps();
 
-
         });
     }
 
