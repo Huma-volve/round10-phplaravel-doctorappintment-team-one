@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('medical_records', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('appointment_id');
+
             $table->text('diagnosis');
             $table->text('notes');
             $table->text('recommendations');
@@ -23,8 +22,8 @@ return new class extends Migration
 
             $table->foreignId('patient_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('doctor_id')->constrained('doctors')->cascadeOnDelete();
-            $table->foreignId('clinic_id')->constrained('clinics')->cascadeOnDelete();
-
+            $table->foreignId('clinic_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('appointment_id')->constrained('users')->cascadeOnDelete();
         });
     }
 
