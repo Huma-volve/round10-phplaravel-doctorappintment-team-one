@@ -21,7 +21,7 @@ return new class extends Migration
             $table->dateTime('updated_at');
 
             $table->foreign('patient_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('doctor_id')->references('user_id')->on('doctors')->onDelete('cascade');
+            $table->foreign('doctor_id')->references('id')->on('users')->onDelete('cascade');
 
         });
     }
