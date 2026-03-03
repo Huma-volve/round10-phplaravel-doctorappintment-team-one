@@ -12,15 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('doctor_time_slots', function (Blueprint $table) {
-            $table->id('id');
+            $table->id();
+            $table->foreignId('doctor_id')->constrained('doctors')->cascadeOnDelete();
+            $table->foreignId('clinic_id')->constrained('clinic')->cascadeOnDelete();
             $table->timestamp('starts_at_utc');
             $table->timestamp('ends_at_utc');
             $table->enum('status', ['available', 'booked'])->default('available');
             $table->integer('capacity')->default(1);
             $table->timestamps();
 
-            $table->foreignId('doctor_id')->constrained('doctors')->cascadeOnDelete();
-            $table->foreignId('clinic_id')->constrained('clinic')->cascadeOnDelete();
+
         });
     }
 

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Reviews extends Model
+class Review extends Model
 {
         use HasFactory;
     protected $fillable = [
@@ -14,7 +14,7 @@ class Reviews extends Model
 
     public function booking()
     {
-        return $this->belongsTo(bookings::class);
+        return $this->belongsTo(Booking::class);
     }
 
     public function patient()

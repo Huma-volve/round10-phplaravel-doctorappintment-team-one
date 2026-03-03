@@ -12,7 +12,10 @@ return new class extends Migration {
     {
         Schema::create('medical_records', function (Blueprint $table) {
             $table->bigIncrements('id');
-
+            $table->foreignId('patient_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('doctor_id')->constrained('doctors')->cascadeOnDelete();
+            $table->foreignId('clinic_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('appointment_id')->constrained('users')->cascadeOnDelete();
             $table->text('diagnosis');
             $table->text('notes');
             $table->text('recommendations');
@@ -20,10 +23,7 @@ return new class extends Migration {
             $table->integer('follow_up_after_days');
             $table->timestamps();
 
-            $table->foreignId('patient_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('doctor_id')->constrained('doctors')->cascadeOnDelete();
-            $table->foreignId('clinic_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('appointment_id')->constrained('users')->cascadeOnDelete();
+
         });
     }
 

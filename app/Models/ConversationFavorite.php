@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Conversation_favorites extends Model
+class ConversationFavorite extends Model
 {
         use HasFactory;
     public $timestamps = false;
@@ -17,8 +17,4 @@ class Conversation_favorites extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function conversation()
-    {
-        return $this->belongsTo(Conversations::class);
-    }
 }

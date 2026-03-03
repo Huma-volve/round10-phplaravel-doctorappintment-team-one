@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Doctor_time_slots extends Model
+class DoctorTimeSlot extends Model
 {
 
     use HasFactory;
@@ -25,11 +25,11 @@ class Doctor_time_slots extends Model
 
     public function clinic()
     {
-        return $this->belongsTo(Clinics::class);
+        return $this->belongsTo(Clinic::class);
     }
 
     public function bookings()
     {
-        return $this->hasMany(Bookings::class, 'time_slot_id');
+        return $this->hasMany(Booking::class, 'time_slot_id');
     }
 }

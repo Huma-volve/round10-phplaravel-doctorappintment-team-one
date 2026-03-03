@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Medical_records extends Model
+class MedicalRecord extends Model
 {
         use HasFactory;
     protected $fillable = [
@@ -26,11 +26,11 @@ class Medical_records extends Model
 
     public function clinic()
     {
-        return $this->belongsTo(Clinics::class);
+        return $this->belongsTo(Clinic::class);
     }
 
     public function appointment()
     {
-        return $this->belongsTo(Bookings::class, 'appointment_id');
+        return $this->belongsTo(Booking::class, 'appointment_id');
     }
 }

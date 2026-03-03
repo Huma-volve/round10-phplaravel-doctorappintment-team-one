@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payments extends Model
+class Payment extends Model
 {
         use HasFactory;
     protected $fillable = [
@@ -19,6 +19,6 @@ class Payments extends Model
 
     public function booking()
     {
-        return $this->belongsTo(Bookings::class);
+        return $this->belongsTo(Booking::class);
     }
 }

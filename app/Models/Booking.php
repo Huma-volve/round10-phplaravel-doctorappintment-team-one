@@ -6,13 +6,10 @@ use Faker\Provider\ar_EG\Payment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bookings extends Model
+class Booking extends Model
 {
         use HasFactory;
-    protected $fillable = [
-        'patient_id', 'doctor_id', 'time_slot_id', 'starts_at_utc', 'ends_at_utc',
-        'status', 'payment_method', 'payment_status', 'amount_cents', 'currency',
-    ];
+    protected $guarded = [];
 
     public function patient()
     {
@@ -26,7 +23,7 @@ class Bookings extends Model
 
     public function timeSlot()
     {
-        return $this->belongsTo(Doctor_time_slots::class, 'time_slot_id');
+        return $this->belongsTo(DoctorTimeSlot::class, 'time_slot_id');
     }
 
     public function payments()
@@ -36,11 +33,11 @@ class Bookings extends Model
 
     public function review()
     {
-        return $this->hasOne(Reviews::class);
+        return $this->hasOne(Review::class);
     }
 
     public function medicalRecord()
     {
-        return $this->hasOne(Medical_records::class, 'appointment_id');
+        return $this->hasOne(MedicalRecord::class, 'appointment_id');
     }
 }
