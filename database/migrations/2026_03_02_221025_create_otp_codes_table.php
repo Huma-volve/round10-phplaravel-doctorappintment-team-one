@@ -22,9 +22,8 @@ return new class extends Migration
             $table->tinyInteger('attempts');
             $table->tinyInteger('max_attempts');
             $table->tinyInteger('send_count');
-            $table->timestamp('last_sent_at_utc');
-            $table->timestamp('consumed_at_utc');
-            $table->timestamps();
+            $table->datetime('sent_at_utc')->useCurrent();   
+            $table->datetime('read_at_utc')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users');
         });

@@ -12,16 +12,75 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $fillable = [
+        'name', 'email', 'phone', 'password', 'role', 'status',
+        'birthdate', 'photo_url', 'email_verified_at', 'remember_token',
+    ];
+
+    public function doctor()
+    {
+        return $this->hasOne(doctor::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(bookings::class, 'patient_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(reviews::class, 'patient_id');
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(favorites::class, 'patient_id');
+    }
+
+    public function searchHistories()
+    {
+        return $this->hasMany(search_histories::class, 'patient_id');
+    }
+
+    public function conversations()
+    {
+        return $this->hasMany(conversations::class, 'patient_id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(messages::class, 'sender_user_id');
+    }
+
+    public function notificationLogs()
+    {
+        return $this->hasMany(notification_logs::class);
+    }
+
+    public function otpCodes()
+    {
+        return $this->hasMany(otp_codes::class);
+    }
+
+    public function auditLogs()
+    {
+        return $this->hasMany(audit_logs::class, 'actor_user_id');
+    }
+
+    public function conversationFavorites()
+    {
+        return $this->hasMany(conversation_favorites::class);
+    }
+
+    public function medicalRecords()
+    {
+        return $this->hasMany(medical_records::class, 'patient_id');
+    }
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
 
     /**
      * The attributes that should be hidden for serialization.
