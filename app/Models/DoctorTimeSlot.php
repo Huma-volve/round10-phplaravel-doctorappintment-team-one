@@ -9,7 +9,9 @@ class DoctorTimeSlot extends Model
 {
 
     use HasFactory;
+    
     public $table = 'doctor_time_slots';
+
     protected $guarded = [];
 
     public function doctor()

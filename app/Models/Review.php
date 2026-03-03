@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-        use HasFactory;
+    use HasFactory;
+
     public $table = 'reviews';
+    
     protected $guarded = [];
 
     public function booking()

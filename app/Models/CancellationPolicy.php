@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class CancellationPolicy extends Model
 {
-        use HasFactory;
+    use HasFactory;
 
     public $table = 'cancellation_policies';
+    
     protected $guarded = [];
 
     public function doctor()
