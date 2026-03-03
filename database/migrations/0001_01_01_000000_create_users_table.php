@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -16,8 +15,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->string('password', 255);
+            $table->enum('role', ['patient', 'doctor', 'admin'])->default('patient');
+            $table->enum('status', ['active', 'suspended', 'banned'])->default('active');
+            $table->date('birthdate')->nullable();
+            $table->string('photo_url')->nullable();
+            $table->string('remember_token');
+            $table->string('social_id');
+            $table->enum('social_type', ['facebook', 'google']);
             $table->timestamps();
         });
 
