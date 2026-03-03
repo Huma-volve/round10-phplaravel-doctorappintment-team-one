@@ -5,20 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AuditLog extends Model
+class Payment extends Model
 {
-    use HasFactory;
-    public $timestamps = false;
-
-    public $table = 'audit_logs';
+        use HasFactory;
+        public $table = 'payments';
     protected $guarded = [];
 
     protected $casts = [
         'meta' => 'array',
     ];
 
-    public function actor()
+    public function booking()
     {
-        return $this->belongsTo(User::class, 'actor_user_id');
+        return $this->belongsTo(Booking::class);
     }
 }

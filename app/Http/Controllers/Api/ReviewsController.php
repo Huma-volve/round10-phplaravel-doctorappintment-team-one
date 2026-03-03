@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ReviewStoreRequest;
-use App\Models\reviews;
+use App\Models\Review;
+use App\Models\Reviews;
 use Illuminate\Http\Request;
 
 class ReviewsController extends Controller
@@ -17,7 +18,7 @@ class ReviewsController extends Controller
 public function getReview()
 {
    
-    $reviews = Reviews::all();
+    $reviews = Review::all();
 
     return response()->json([
         'status' => true,
@@ -34,7 +35,7 @@ public function getReview()
     {
        
         $data = $request->all();
-        $reviews = Reviews::create($data);
+        $reviews = Review::create($data);
         if($reviews){
 
             return  response()->json([
@@ -54,7 +55,7 @@ public function getReview()
      */
     public function show($id)
     {
-        $reviews = Reviews::find($id);
+        $reviews = Review::find($id);
         return  response()->json([
                 'status' => true,
                 'message' => 'show rewiew ' ,
@@ -70,7 +71,7 @@ public function getReview()
         $data['comment'] = $request->comment ;
         $data['rating'] = $request->rating ;
         $data['updated_at'] = now();
-        $reviews = Reviews::find($id);
+        $reviews = Review::find($id);
         $reviews->update($data);
 
     
@@ -93,7 +94,7 @@ public function getReview()
      */
     public function destroy($id)
     {
-        $reviews = Reviews::find($id);
+        $reviews = Review::find($id);
         $reviews->delete();
 
     

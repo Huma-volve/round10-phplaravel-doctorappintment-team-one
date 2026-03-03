@@ -5,12 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Search_histories extends Model
+class SearchHistory extends Model
 {
         use HasFactory;
-    protected $fillable = [
-        'patient_id', 'query', 'specialty', 'lat', 'lng', 'doctor_name',
-    ];
+        public $table = 'search_histories';
+    protected $guarded = [];
 
     public function patient()
     {

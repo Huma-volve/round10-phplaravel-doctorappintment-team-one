@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
-            $table->string('specialties')->nullable();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('license_number', 80);
-            $table->text('bio')->nullable();
-            $table->integer('years_of_experience')->nullable();
+            $table->text('bio');
+            $table->integer('years_of_experience');
             $table->enum('verification_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('verification_notes')->nullable();
             $table->timestamps();
-            
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+
+
         });
     }
 
