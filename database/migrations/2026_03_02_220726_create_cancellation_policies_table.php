@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cancellation_policies', function (Blueprint $table) {
+        Schema::create('cancellationPolicy', function (Blueprint $table) {
             $table->id();
             $table->boolean('allowed_cancel');
             $table->integer('allowed_cancel_before_minutes')->nullable();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cancellation_policies');
+        Schema::dropIfExists('cancellationPolicy');
     }
 };

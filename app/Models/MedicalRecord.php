@@ -5,14 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Medical_records extends Model
+class MedicalRecord extends Model
 {
         use HasFactory;
-    protected $fillable = [
-        'patient_id', 'doctor_id', 'clinic_id', 'appointment_id',
-        'diagnosis', 'notes', 'recommendations',
-        'follow_up_required', 'follow_up_after_days',
-    ];
+    public $table = 'medical_records';
+    protected $guarded = [];
 
     public function patient()
     {
@@ -26,11 +23,11 @@ class Medical_records extends Model
 
     public function clinic()
     {
-        return $this->belongsTo(Clinics::class);
+        return $this->belongsTo(Clinic::class);
     }
 
     public function appointment()
     {
-        return $this->belongsTo(Bookings::class, 'appointment_id');
+        return $this->belongsTo(Booking::class, 'appointment_id');
     }
 }

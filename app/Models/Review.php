@@ -5,10 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Favorites extends Model
+class Review extends Model
 {
         use HasFactory;
-    protected $fillable = ['patient_id', 'doctor_id'];
+    public $table = 'reviews';
+    protected $guarded = [];
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class);
+    }
 
     public function patient()
     {
