@@ -1,4 +1,6 @@
 <?php
+use App\Http\Controllers\Notification\NotificationController;
+
 
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\MeNotificationsController;
@@ -15,7 +17,10 @@ use App\Http\Controllers\Api\bookingcontroller;
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    // notification logs
+    // Notification logs (history)
+    Route::get('/v1/notifications', [NotificationController::class, 'index']);
+    Route::patch('/v1/notifications/{id}/read', [NotificationController::class, 'markRead']);
+    Route::patch('/v1/notifications/read-all', [NotificationController::class, 'markAllRead']);
 
 });
 
