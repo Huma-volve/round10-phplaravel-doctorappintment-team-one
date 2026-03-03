@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('doctor_id');
-            $table->timestamp('last_message_at_utc');
+            $table->dateTime('last_message_at_utc');
             $table->boolean('is_read')->default(false);
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
 
             $table->foreign('patient_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('doctor_id')->references('user_id')->on('doctors')->onDelete('cascade');
