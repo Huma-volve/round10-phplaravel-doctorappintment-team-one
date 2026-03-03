@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Favorite extends Model
 {
         use HasFactory;
+        public $table = 'favorites';
     protected $fillable = ['patient_id', 'doctor_id'];
 
     public function patient()

@@ -8,10 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Message extends Model
 {
         use HasFactory;
-    protected $fillable = [
-        'conversation_id', 'sender_user_id', 'type', 'body',
-        'media_url', 'media_size_bytes', 'media_mime', 'sent_at_utc', 'read_at_utc',
-    ];
+    public $table = 'messages';
+    protected $guarded = [];
 
     public function conversation()
     {

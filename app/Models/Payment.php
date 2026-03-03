@@ -8,10 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
         use HasFactory;
-    protected $fillable = [
-        'booking_id', 'provider', 'provider_payment_id', 'provider_customer_id',
-        'status', 'amount_cents', 'refunded_cents', 'currency', 'meta',
-    ];
+        public $table = 'payments';
+    protected $guarded = [];
 
     protected $casts = [
         'meta' => 'array',

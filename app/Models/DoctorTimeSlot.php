@@ -9,14 +9,8 @@ class DoctorTimeSlot extends Model
 {
 
     use HasFactory;
-    protected $fillable = [
-        'doctor_id',
-        'clinic_id',
-        'starts_at_utc',
-        'ends_at_utc',
-        'status',
-        'capacity',
-    ];
+    public $table = 'doctor_time_slots';
+    protected $guarded = [];
 
     public function doctor()
     {

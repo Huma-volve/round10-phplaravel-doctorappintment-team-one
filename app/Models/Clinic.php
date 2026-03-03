@@ -9,6 +9,7 @@ class Clinic extends Model
 {
         use HasFactory;
     protected $guarded = [];
+    public $table = 'clinics';
 
     public function doctor()
     {

@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class SearchHistory extends Model
 {
         use HasFactory;
-    protected $fillable = [
-        'patient_id', 'query', 'specialty', 'lat', 'lng', 'doctor_name',
-    ];
+        public $table = 'search_histories';
+    protected $guarded = [];
 
     public function patient()
     {

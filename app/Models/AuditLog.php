@@ -10,7 +10,7 @@ class AuditLog extends Model
     use HasFactory;
     public $timestamps = false;
 
-
+    public $table = 'audit_logs';
     protected $guarded = [];
 
     protected $casts = [

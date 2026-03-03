@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ConversationFavorite extends Model
 {
         use HasFactory;
+    public $table = 'conversation_favorites';
     public $timestamps = false;
 
     protected $fillable = ['user_id', 'conversation_id', 'created_at'];

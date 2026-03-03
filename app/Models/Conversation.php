@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Conversation extends Model
 {
         use HasFactory;
+    public $table = 'conversations';
     protected $guarded = [];
 
     public function patient()
