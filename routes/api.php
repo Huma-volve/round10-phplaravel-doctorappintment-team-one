@@ -1,10 +1,13 @@
 <?php
+use App\Http\Controllers\Notification\NotificationController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\MeNotificationsController;
-use App\Http\Controllers\Api\NotificationPreferencesController;
+
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    // notification logs
+    // Notification logs (history)
+    Route::get('/v1/notifications', [NotificationController::class, 'index']);
+    Route::patch('/v1/notifications/{id}/read', [NotificationController::class, 'markRead']);
+    Route::patch('/v1/notifications/read-all', [NotificationController::class, 'markAllRead']);
 
 });
