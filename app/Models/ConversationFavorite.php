@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ConversationFavorite extends Model
 {
-    use HasFactory;
-
+        use HasFactory;
+    public $table = 'conversation_favorites';
     public $timestamps = false;
 
     protected $fillable = ['user_id', 'conversation_id', 'created_at'];
@@ -18,8 +18,4 @@ class ConversationFavorite extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function conversation()
-    {
-        return $this->belongsTo(Conversation::class);
-    }
 }

@@ -13,17 +13,20 @@ return new class extends Migration {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password', 255);
+            $table->string('phone');
+            $table->string('password', 255)->nullable();
             $table->enum('role', ['patient', 'doctor', 'admin'])->default('patient');
             $table->enum('status', ['active', 'suspended', 'banned'])->default('active');
             $table->date('birthdate')->nullable();
             $table->string('photo_url')->nullable();
-            $table->string('remember_token');
-            $table->string('social_id');
-            $table->enum('social_type', ['facebook', 'google']);
+            $table->string('remember_token')->nullable();
+            $table->string('social_id')->nullable();
+            $table->enum('social_type', ['facebook', 'google'])->nullable();
             $table->timestamps();
+
+            // Add check constraint
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

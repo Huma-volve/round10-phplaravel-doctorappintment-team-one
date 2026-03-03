@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
+<<<<<<< HEAD
     use HasFactory;
     
     protected $fillable = [
@@ -20,6 +21,11 @@ class Payment extends Model
         'currency', 
         'meta',
     ];
+=======
+        use HasFactory;
+        public $table = 'payments';
+    protected $guarded = [];
+>>>>>>> 9540379c13524afa56bec0bfe002ffa727584cc4
 
     protected $casts = [
         'meta' => 'array',

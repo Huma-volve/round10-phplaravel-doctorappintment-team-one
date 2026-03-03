@@ -9,13 +9,9 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $fillable = [
-        'name', 'email', 'phone', 'password', 'role', 'status',
-        'birthdate', 'photo_url', 'email_verified_at', 'remember_token',
-    ];
+    protected $guarded = [];
 
     public function doctor()
     {

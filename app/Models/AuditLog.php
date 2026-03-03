@@ -9,18 +9,8 @@ class AuditLog extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-
-    protected $fillable = [
-        'actor_user_id',
-        'action',
-        'target_type',
-        'target_id',
-        'ip',
-        'user_agent',
-        'meta',
-        'created_at_utc',
-    ];
+    public $table = 'audit_logs';
+    protected $guarded = [];
 
     protected $casts = [
         'meta' => 'array',

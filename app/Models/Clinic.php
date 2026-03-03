@@ -7,18 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Clinic extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'doctor_id', 
-        'name', 
-        'address', 
-        'lat', 
-        'lng',
-        'session_duration_minutes', 
-        'session_price_cents', 
-        'currency',
-    ];
+        use HasFactory;
+    protected $guarded = [];
+    public $table = 'clinics';
 
     public function doctor()
     {

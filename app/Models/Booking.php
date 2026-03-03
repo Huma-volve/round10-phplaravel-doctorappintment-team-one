@@ -9,19 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
         use HasFactory;
-    protected $fillable = [
-        'patient_id', 
-        'doctor_id', 
-        'time_slot_id', 
-        'starts_at_utc', 
-        'ends_at_utc',
-        'status', 
-        'payment_method', 
-        'payment_status', 
-        'amount_cents', 
-        'currency',
-    ];
-
+    protected $guarded = [];
+    public $table = 'bookings';
     public function patient()
     {
         return $this->belongsTo(User::class, 'patient_id');

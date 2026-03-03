@@ -7,19 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class MedicalRecord extends Model
 {
-    use HasFactory;
-    
-    protected $fillable = [
-        'patient_id', 
-        'doctor_id', 
-        'clinic_id', 
-        'appointment_id',
-        'diagnosis', 
-        'notes', 
-        'recommendations',
-        'follow_up_required', 
-        'follow_up_after_days',
-    ];
+        use HasFactory;
+    public $table = 'medical_records';
+    protected $guarded = [];
 
     public function patient()
     {

@@ -8,13 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Conversation extends Model
 {
         use HasFactory;
-    protected $fillable = [
-        'patient_id', 
-        'doctor_id', 
-        'last_message_at_utc', 
-        'patient_archived', 
-        'doctor_archived',
-    ];
+    public $table = 'conversations';
+    protected $guarded = [];
 
     public function patient()
     {
@@ -23,7 +18,7 @@ class Conversation extends Model
 
     public function doctor()
     {
-        return $this->belongsTo(doctor::class);
+        return $this->belongsTo(Doctor::class);
     }
 
     public function messages()

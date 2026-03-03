@@ -7,11 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'booking_id', 'patient_id', 'doctor_id', 'rating', 'comment',
-    ];
+        use HasFactory;
+    public $table = 'reviews';
+    protected $guarded = [];
 
     public function booking()
     {

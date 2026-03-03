@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('conversation_favorites', function (Blueprint $table) {
-            $table->id('id');
-            
+            $table->id();
+
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('conversation_id')->constrained('conversations')->onDelete('cascade');
 
             $table->unique(['user_id','conversation_id']);
             $table->timestamp('created_at');
-        
+
         });
     }
 

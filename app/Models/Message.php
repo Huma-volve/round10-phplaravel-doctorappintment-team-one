@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
+<<<<<<< HEAD
     use HasFactory;
 
     protected $fillable = [
@@ -20,6 +21,11 @@ class Message extends Model
         'sent_at_utc', 
         'read_at_utc',
     ];
+=======
+        use HasFactory;
+    public $table = 'messages';
+    protected $guarded = [];
+>>>>>>> 9540379c13524afa56bec0bfe002ffa727584cc4
 
     public function conversation()
     {
