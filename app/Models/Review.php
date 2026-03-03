@@ -11,6 +11,7 @@ class Review extends Model
     public $table = 'reviews';
     protected $guarded = [];
 
+
     public function booking()
     {
         return $this->belongsTo(Booking::class);
