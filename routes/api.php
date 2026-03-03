@@ -1,8 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\DoctorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::get('/doctors/nearby', [DoctorController::class, 'getNearbyDoctors']);

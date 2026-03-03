@@ -56,4 +56,7 @@ class Doctor extends Model
         return $this->hasMany(MedicalRecord::class);
     }
 
+    public function favorite(){
+        return $this->hasMany(Favorite::class);
+    }
 }
