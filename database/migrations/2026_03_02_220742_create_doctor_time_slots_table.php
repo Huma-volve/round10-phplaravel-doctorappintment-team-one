@@ -21,7 +21,6 @@ return new class extends Migration
             $table->integer('capacity')->default(1);
             $table->timestamps();
 
-
         });
     }
 

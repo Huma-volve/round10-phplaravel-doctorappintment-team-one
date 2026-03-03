@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Doctor extends Model
 {
-        use HasFactory;
-        public $table = 'doctors';
-   protected $guarded = [];
+    use HasFactory;
+    public $table = 'doctors';
+
+    protected $guarded = [];
 
     public function user()
     {
@@ -55,4 +56,7 @@ class Doctor extends Model
         return $this->hasMany(MedicalRecord::class);
     }
 
+    public function favorite(){
+        return $this->hasMany(Favorite::class);
+    }
 }
