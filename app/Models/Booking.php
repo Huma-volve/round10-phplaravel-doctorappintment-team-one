@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
-        use HasFactory;
+    use HasFactory;
+
     protected $guarded = [];
+    
     public $table = 'bookings';
+    
     public function patient()
     {
         return $this->belongsTo(User::class, 'patient_id');
