@@ -18,12 +18,15 @@ return new class extends Migration
             $table->enum('channel', ['email', 'in_app']);
             $table->string('title', 200);
             $table->text('body');
-            $table->json('data');
-            $table->string('provider_message_id', 255);
-            $table->datetime('sent_at_utc')->useCurrent();   
-            $table->datetime('read_at_utc')->nullable();
+            $table->json('data')->nullable();
+            $table->timestamps();
+            $table->string('provider_message_id', 255)->nullable();
+            $table->dateTime('sent_at_utc')->nullable();   
+            $table->dateTime('read_at_utc')->nullable();
+            $table->index(['user_id', 'created_at']);
+            $table->index(['user_id', 'read_at_utc']);
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
