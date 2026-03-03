@@ -24,57 +24,57 @@ class User extends Authenticatable
 
     public function bookings()
     {
-        return $this->hasMany(bookings::class, 'patient_id');
+        return $this->hasMany(Booking::class, 'patient_id');
     }
 
     public function reviews()
     {
-        return $this->hasMany(reviews::class, 'patient_id');
+        return $this->hasMany(Review::class, 'patient_id');
     }
 
     public function favorites()
     {
-        return $this->hasMany(favorites::class, 'patient_id');
+        return $this->hasMany(Favorite::class, 'patient_id');
     }
 
     public function searchHistories()
     {
-        return $this->hasMany(search_histories::class, 'patient_id');
+        return $this->hasMany(SearchHistory::class, 'patient_id');
     }
 
     public function conversations()
     {
-        return $this->hasMany(conversations::class, 'patient_id');
+        return $this->hasMany(Conversation::class, 'patient_id');
     }
 
     public function messages()
     {
-        return $this->hasMany(messages::class, 'sender_user_id');
+        return $this->hasMany(Message::class, 'sender_user_id');
     }
 
     public function notificationLogs()
     {
-        return $this->hasMany(notification_logs::class);
+        return $this->hasMany(NotificationLog::class);
     }
 
     public function otpCodes()
     {
-        return $this->hasMany(otp_codes::class);
+        return $this->hasMany(OtpCode::class);
     }
 
     public function auditLogs()
     {
-        return $this->hasMany(audit_logs::class, 'actor_user_id');
+        return $this->hasMany(AuditLog::class, 'actor_user_id');
     }
 
     public function conversationFavorites()
     {
-        return $this->hasMany(conversation_favorites::class);
+        return $this->hasMany(ConversationFavorite::class);
     }
 
     public function medicalRecords()
     {
-        return $this->hasMany(medical_records::class, 'patient_id');
+        return $this->hasMany(MedicalRecord::class, 'patient_id');
     }
     /**
      * The attributes that are mass assignable.

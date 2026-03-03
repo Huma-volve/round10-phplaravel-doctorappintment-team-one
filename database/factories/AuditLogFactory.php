@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AuditLog>
  */
 class AuditLogFactory extends Factory
 {
@@ -18,10 +18,10 @@ class AuditLogFactory extends Factory
      */
     public function definition(): array
     {
-        
+        $user = User::factory()->create();
 
         return [
-            'actor_user_id' => User::factory(),
+            'actor_user_id' => $user->id,
             'action' => fake()->randomElement([
                 'login',
                 'logout',

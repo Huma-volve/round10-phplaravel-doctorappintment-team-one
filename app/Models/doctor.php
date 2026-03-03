@@ -7,10 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Doctor extends Model
 {
-        use HasFactory;
-   protected $fillable = [
-        'user_id', 'specialties', 'license_number', 'bio',
-        'years_of_experience', 'verification_status', 'verification_notes',
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id', 
+        'specialties', 
+        'license_number', 
+        'bio',
+        'years_of_experience', 
+        'verification_status', 
+        'verification_notes',
     ];
 
     public function user()
@@ -20,41 +26,41 @@ class Doctor extends Model
 
     public function clinics()
     {
-        return $this->hasMany(Clinics::class);
+        return $this->hasMany(Clinic::class);
     }
 
     public function cancellationPolicy()
     {
-        return $this->hasOne(Cancellation_policies::class);
+        return $this->hasOne(CancellationPolicy::class);
     }
 
     public function timeSlots()
     {
-        return $this->hasMany(Doctor_time_slots::class);
+        return $this->hasMany(DoctorTimeSlot::class);
     }
 
     public function bookings()
     {
-        return $this->hasMany(Bookings::class);
+        return $this->hasMany(Booking::class);
     }
 
     public function reviews()
     {
-        return $this->hasMany(Reviews::class);
+        return $this->hasMany(Review::class);
     }
 
     public function favorites()
     {
-        return $this->hasMany(Favorites::class);
+        return $this->hasMany(Favorite::class);
     }
 
     public function conversations()
     {
-        return $this->hasMany(Conversations::class);
+        return $this->hasMany(Conversation::class);
     }
 
     public function medicalRecords()
     {
-        return $this->hasMany(Medical_records::class);
+        return $this->hasMany(MedicalRecord::class);
     }
 }

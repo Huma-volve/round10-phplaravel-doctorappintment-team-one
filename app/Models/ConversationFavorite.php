@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Conversation_favorites extends Model
+class ConversationFavorite extends Model
 {
-        use HasFactory;
+    use HasFactory;
+
     public $timestamps = false;
 
     protected $fillable = ['user_id', 'conversation_id', 'created_at'];
@@ -19,6 +20,6 @@ class Conversation_favorites extends Model
 
     public function conversation()
     {
-        return $this->belongsTo(Conversations::class);
+        return $this->belongsTo(Conversation::class);
     }
 }

@@ -5,12 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Clinics extends Model
+class Clinic extends Model
 {
-        use HasFactory;
+    use HasFactory;
+
     protected $fillable = [
-        'doctor_id', 'name', 'address', 'lat', 'lng',
-        'session_duration_minutes', 'session_price_cents', 'currency',
+        'doctor_id', 
+        'name', 
+        'address', 
+        'lat', 
+        'lng',
+        'session_duration_minutes', 
+        'session_price_cents', 
+        'currency',
     ];
 
     public function doctor()
@@ -20,11 +27,11 @@ class Clinics extends Model
 
     public function timeSlots()
     {
-        return $this->hasMany(Doctor_time_slots::class);
+        return $this->hasMany(DoctorTimeSlot::class);
     }
 
     public function medicalRecords()
     {
-        return $this->hasMany(Medical_records::class);
+        return $this->hasMany(MedicalRecord::class);
     }
 }

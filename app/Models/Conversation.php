@@ -5,11 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class conversations extends Model
+class Conversation extends Model
 {
         use HasFactory;
     protected $fillable = [
-        'patient_id', 'doctor_id', 'last_message_at_utc', 'patient_archived', 'doctor_archived',
+        'patient_id', 
+        'doctor_id', 
+        'last_message_at_utc', 
+        'patient_archived', 
+        'doctor_archived',
     ];
 
     public function patient()
@@ -24,11 +28,11 @@ class conversations extends Model
 
     public function messages()
     {
-        return $this->hasMany(messages::class);
+        return $this->hasMany(Message::class);
     }
 
     public function conversationFavorites()
     {
-        return $this->hasMany(conversation_favorites::class);
+        return $this->hasMany(ConversationFavorite::class);
     }
 }

@@ -5,15 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Search_histories extends Model
+class Favorite extends Model
 {
-        use HasFactory;
-    protected $fillable = [
-        'patient_id', 'query', 'specialty', 'lat', 'lng', 'doctor_name',
-    ];
+    use HasFactory;
+
+    protected $fillable = ['patient_id', 'doctor_id'];
 
     public function patient()
     {
         return $this->belongsTo(User::class, 'patient_id');
+    }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class);
     }
 }

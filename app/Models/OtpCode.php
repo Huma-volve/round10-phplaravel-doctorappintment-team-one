@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Otp_codes extends Model
+class OtpCode extends Model
 {
-
     use HasFactory;
-protected $fillable = [
+    
+    protected $fillable = [
         'user_id', 'channel', 'destination', 'purpose', 'code_hash',
         'expires_at_utc', 'attempts', 'max_attempts', 'send_count',
         'last_sent_at_utc', 'consumed_at_utc',
