@@ -13,16 +13,13 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id('id');
-            $table->unsignedInteger('booking_id')->unique();
-            $table->unsignedInteger('patient_id')->unique();
-            $table->unsignedInteger('doctor_id')->unique();
             $table->tinyInteger('rating');
             $table->text('comment');
             $table->timestamps();
 
-            $table->foreign('booking_id')->references('id')->on('bookings');
-            $table->foreign('patient_id')->references('id')->on('users');
-            $table->foreign('doctor_id')->references('id')->on('doctors');
+            $table->foreignId('booking_id')->constrained('bookings')->cascadeOnDelete();
+            $table->foreignId('patient_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('doctor_id')->constrained('doctors')->cascadeOnDelete();
         });
     }
 

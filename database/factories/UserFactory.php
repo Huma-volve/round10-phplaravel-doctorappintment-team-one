@@ -26,19 +26,38 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'role' => fake()->randomElement(['patient', 'doctor', 'admin']),
+            'status' => fake()->randomElement(['active', 'suspended', 'banned']),
+            'birthdate' => fake()->date('Y-m-d', '-18 years'),
+            'photo_url' => fake()->imageUrl(500, 500),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'social_id' => Str::random(10),
         ];
+
+
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
+
+    public function patient(): static
+    {
+        return $this->state(['role' => 'patient', 'status' => 'active']);
+    }
+
+    public function doctor(): static
+    {
+        return $this->state(['role' => 'doctor', 'status' => 'active']);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(['role' => 'admin', 'status' => 'active']);
+    }
+
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return $this->state(['email_verified_at' => null]);
     }
+
 }

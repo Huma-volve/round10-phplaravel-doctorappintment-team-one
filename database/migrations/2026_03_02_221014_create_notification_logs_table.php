@@ -20,9 +20,8 @@ return new class extends Migration
             $table->text('body');
             $table->json('data');
             $table->string('provider_message_id', 255);
-            $table->timestamp('sent_at_utc');
-            $table->timestamp('read_at_utc');
-            $table->timestamps();
+            $table->datetime('sent_at_utc')->useCurrent();   
+            $table->datetime('read_at_utc')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users');
         });
