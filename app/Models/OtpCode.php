@@ -11,7 +11,7 @@ class OtpCode extends Model
     use HasFactory;
     public $table = 'otp_codes';
 protected $guarded = [];
-
+public $timestamps = false;
     public function user()
     {
         return $this->belongsTo(User::class);
