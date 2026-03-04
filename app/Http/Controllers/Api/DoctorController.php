@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Doctor\DoctorDetailsResource;
 use App\Http\Resources\Doctor\DoctorHomeResource;
 use App\Models\Doctor;
+use App\Models\SearchHistory;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
@@ -50,12 +51,20 @@ class DoctorController extends Controller
 
     public function getDoctor(Doctor $doctor){
 
+
         $doctor->load(['specialties', 'clinics', 'favorites'])
             ->loadCount(['bookings', 'reviews'])
             ->loadExists(['favorites as is_favorite' => function($favQuery){
                 $favQuery->where('doctor_id', auth()->id());
             }]);
-        
+
+        // add doctor to search history for auth user
+        SearchHistory::create([
+            'patient_id'   => auth()->id(),
+            'doctor_id'    => $doctor->id,
+            'created_at'   => now(),
+            'updated_at'   => now(),
+        ]);
 
         return response()->json([
             'status' => 'success',

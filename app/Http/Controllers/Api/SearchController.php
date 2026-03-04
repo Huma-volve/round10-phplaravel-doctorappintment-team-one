@@ -10,6 +10,20 @@ use App\Models\SearchHistory;
 class SearchController extends Controller
 {
     // TODO whating for auth and collections for models
+
+    public function index(){
+        $user_id = auth()->id();
+
+//        $search_histories = SearchHistory::with('doctor')
+//            ->where('patient_id', $user_id)
+//            ->latest()
+//            ->get();
+        $search_histories=SearchHistory::where('patient_id',$user_id)->get();
+
+        return response()->json([
+            'data' => $search_histories
+        ]);
+    }
     public function search_for_doctor(SearchRequest $request)
     {
         $doctors = Doctor::query()
@@ -26,13 +40,6 @@ class SearchController extends Controller
             ->with(['user', 'specialties','clinics'])
             ->paginate(10);
 
-//        if($request->filled('speciality_id')){
-//            SearchHistory::create([
-//                'patient_id'   => auth()->id(),
-//                'doctor_id'    => null,
-//                'specialty_id' => $request->specialty_id,
-//            ]);
-//        }
 
         return response()->json(['data'=>$doctors] , 200);
     }
