@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\bookingcontroller;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ReviewsController;
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Notification\NotificationController;
 use App\Models\Reviews;
 use Illuminate\Http\Request;
@@ -92,4 +93,9 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout',   [AuthController::class, 'logout']);
     });
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    route::get('/search-history',[SearchController::class,'index']);
+    route::post('/search' , [SearchController::class , 'search_for_doctor']);
 });
