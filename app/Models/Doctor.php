@@ -74,7 +74,7 @@ class Doctor extends Model
     }
 
 
-    public function getAvgRatingAttribute() : Attribute{
+    public function getAvgRatingAttribute(){
         return $this->reviews()->avg('rating');
     }
 }
