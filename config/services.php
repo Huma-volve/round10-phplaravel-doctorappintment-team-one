@@ -36,8 +36,8 @@ return [
     ],
 
     'google' => [
-        "client_id"=>"630198609940-rpaq8d3ed6k6uumf1ffjahsm4ras9mpi.apps.googleusercontent.com",
-        "client_secret"=>"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",
+        "client_id"=> env('GOOGLE_CLIENT_ID'),
+        "client_secret"=> env('GOOGLE_SECRET_ID'),
         "redirect"=>"http://127.0.0.1:8000/api/auth/google/callback"
     ]
 
