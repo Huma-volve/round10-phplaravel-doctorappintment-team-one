@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BookingResource;
 use App\Models\Booking;
 use App\Models\DoctorTimeSlot;
 use App\Models\Messages;
@@ -68,11 +69,12 @@ class bookingcontroller extends Controller
 
     public function myBookings(Request $request)
     {
-        $validate = $request->validate([
-            'user_id' => 'required|exists:users,id'
-        ]);
+        $user = $request->user();
 
-        $bookings = Booking::where('patient_id', $validate['user_id'])->get();
+        $bookings = Booking::where('patient_id', $user->id)
+            ->with(['patient', 'doctor', 'doctor.user', 'timeSlot', 'review'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         if ($bookings->isEmpty()) {
             return response()->json([
@@ -80,17 +82,18 @@ class bookingcontroller extends Controller
             ], 404);
         }
 
-        return response()->json($bookings, 200);
+        return response()->json([
+            'message' => 'Bookings retrieved successfully',
+            'data' => BookingResource::collection($bookings)
+        ], 200);
     }
 
     public function cancel(Request $request, $id)
     {
-        $valdiate = $request->validate([
-            'user_id' => 'required|exists:users,id'
-        ]);
+        $user = $request->user();
 
         $booking = Booking::where('id', $id)
-            ->where('patient_id', $valdiate['user_id'])
+            ->where('patient_id', $user->id)
             ->first();
 
         if (!$booking) {
@@ -98,9 +101,6 @@ class bookingcontroller extends Controller
                 'message' => 'This booking is not for you or does not exist.'
             ], 403);
         }
-
-
-
 
         $slot = DoctorTimeSlot::find($booking->time_slot_id);
         if ($slot) {
@@ -110,6 +110,10 @@ class bookingcontroller extends Controller
 
         $booking->status = 'cancelled_by_patient';
         $booking->save();
+        
+        // Load relationships for response
+        $booking->load(['patient', 'doctor', 'doctor.user', 'timeSlot', 'review']);
+        
         app(NotificationService::class)->notify(
             $booking->doctor_id,
             'cancellation',
@@ -119,9 +123,9 @@ class bookingcontroller extends Controller
             ['booking_id' => $booking->id]
         );
 
-
         return response()->json([
-            'message' => 'Appointment cancelled successfully.',
+            'message' => 'Appointment cancelled successfully',
+            'data' => new BookingResource($booking)
         ], 200);
     }
 
@@ -130,13 +134,14 @@ class bookingcontroller extends Controller
 
     public function update(Request $request, $id)
     {
+        $user = $request->user();
+        
         $valdiate = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'new_booking_id' => 'required|exists:doctor_time_slots,id'
         ]);
 
         $oldBooking = Booking::where('id', $id)
-            ->where('patient_id', $valdiate['user_id'])
+            ->where('patient_id', $user->id)
             ->first();
 
         if (!$oldBooking) {
@@ -144,7 +149,6 @@ class bookingcontroller extends Controller
                 'message' => 'This booking is not for you or does not exist.'
             ], 403);
         }
-
 
         $newSlot = DoctorTimeSlot::findOrFail($valdiate['new_booking_id']);
 
@@ -160,13 +164,11 @@ class bookingcontroller extends Controller
             ], 400);
         }
 
-
         $oldSlot = DoctorTimeSlot::find($oldBooking->time_slot_id);
         if ($oldSlot) {
             $oldSlot->status = 'available';
             $oldSlot->save();
         }
-
 
         $oldBooking->time_slot_id = $newSlot->id;
         $oldBooking->starts_at_utc = $newSlot->starts_at_utc;
@@ -176,6 +178,10 @@ class bookingcontroller extends Controller
 
         $newSlot->status = 'booked';
         $newSlot->save();
+        
+        // Load relationships for response
+        $oldBooking->load(['patient', 'doctor', 'doctor.user', 'timeSlot', 'review']);
+        
         app(NotificationService::class)->notify(
             $oldBooking->doctor_id,
             'booking',
@@ -186,8 +192,8 @@ class bookingcontroller extends Controller
         );
 
         return response()->json([
-            'message' => 'Appointment rescheduled successfully.',
-            'new_booking' => $oldBooking,
+            'message' => 'Appointment rescheduled successfully',
+            'data' => new BookingResource($oldBooking)
         ], 200);
     }
 
