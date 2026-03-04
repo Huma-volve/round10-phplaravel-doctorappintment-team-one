@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\LocationNotFoundException;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,10 +32,24 @@ class Clinic extends Model
 
     public function scopeNearby($query, $location){
         if ( !isset($location['lat']) || !isset($location['lng']) ) {
-            throw new Exception("Location not found");
+            throw new LocationNotFoundException();
         }
 
-        return $query->selectRaw("*, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance", [$location['lat'], $location['lng'], $location['lat']])
-            ->orderBy('distance');
+        $radius = $location['radius'];
+        
+        $lat = $location['lat'];
+        $lng = $location['lng'];
+
+        return $query->selectRaw("
+            (6371 * acos(
+                cos(radians(?)) *
+                cos(radians(clinics.lat)) *
+                cos(radians(clinics.lng) - radians(?)) +
+                sin(radians(?)) *
+                sin(radians(clinics.lat))
+            )) AS distance
+        ", [$lat, $lng, $lat])
+        ->having('distance', '<=', $radius)
+        ->orderBy('distance');
     }
 }

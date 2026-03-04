@@ -2,15 +2,28 @@
 
 namespace App\Models;
 
+use App\Http\Enums\DoctorVerificationStatus;
+use App\Http\Traits\HasProfileImage;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Doctor extends Model
 {
-    use HasFactory;
+    use HasFactory, HasProfileImage;
+
     public $table = 'doctors';
 
     protected $guarded = [];
+
+    protected $casts = [
+        'verification_status' => DoctorVerificationStatus::class
+    ];
+
+    protected $appends = [
+        'profile_image',
+        'avgRating'
+    ];
 
     public function user()
     {
@@ -18,7 +31,7 @@ class Doctor extends Model
     }
 
     public function specialties(){
-        return $this->hasMany(DoctorSpecialties::class);
+        return $this->belongsToMany(Specialty::class, "doctor_specialty", 'doctor_id', 'specialty_id');
     }
     public function clinics()
     {
@@ -56,7 +69,14 @@ class Doctor extends Model
         return $this->hasMany(MedicalRecord::class);
     }
 
-    public function favorite(){
+    public function favorites(){
         return $this->hasMany(Favorite::class);
+    }
+
+
+    public function avgRating() : Attribute{
+        return new Attribute(
+            get: fn() => $this->reviews()->avg('rating') ?? 0,
+        );
     }
 }

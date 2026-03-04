@@ -4,8 +4,6 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\SocialAuthController;
 use App\Http\Controllers\Api\bookingcontroller;
 use App\Http\Controllers\Api\DoctorController;
-use App\Http\Controllers\Api\MeNotificationsController;
-use App\Http\Controllers\Api\NotificationPreferencesController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ReviewsController;
 use App\Http\Controllers\Notification\NotificationController;
@@ -13,6 +11,10 @@ use App\Models\Reviews;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Http\JsonResponse;
+
+
+use App\Http\Controllers\Api\FavoriteController;
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -23,8 +25,29 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+Route::prefix('v1')->name('v1.')->group(function () {
 
-Route::get('/doctors/nearby', [DoctorController::class, 'getNearbyDoctors']);
+
+    Route::prefix('/doctors')->name('doctors.')->group(function () {
+        Route::get('/nearby', [DoctorController::class, 'getNearbyDoctors'])->name('nearby');
+        Route::get('/{doctor}', [DoctorController::class, 'getDoctor'])->name('show');
+    });
+
+    Route::prefix('/user/favorites')->name('user.favorites.')->group(function () {
+
+        Route::prefix('/doctors')->name('doctors.')->group(function () {
+            Route::get('/', [FavoriteController::class, 'listFavorites'])->name('list');
+            Route::post('/add', [FavoriteController::class, 'addToFavorite'])->name('add');
+            Route::post('/remove', [FavoriteController::class, 'removeFromFavorite'])->name('remove');
+        });
+
+
+    });
+
+});
+
+
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -44,7 +67,7 @@ Route::get('/user', function (Request $request) {
 
 
 // Route::apiResource('booking',bookingcontroller::class);
-Route::get('/doctors/{doctor_id}/slots', [bookingcontroller::class, 'availableSlots']);
+// Route::get('/doctors/{doctor_id}/slots', [bookingcontroller::class, 'availableSlots']);
 Route::post('/appointments/book', [bookingcontroller::class, 'bookslot']);
     //  ->middleware('auth:sanctum');
     Route::get('/appointments/my', [bookingcontroller::class, 'myBookings']);

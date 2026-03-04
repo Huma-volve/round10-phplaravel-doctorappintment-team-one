@@ -31,7 +31,7 @@ class User extends Authenticatable
 
     public function favorites()
     {
-        return $this->hasMany(Favorite::class, 'patient_id');
+        return $this->belongsToMany(Doctor::class, 'favorites', 'patient_id', 'doctor_id');
     }
 
     public function searchHistories()
