@@ -1,28 +1,49 @@
 <?php
-use App\Http\Controllers\Notification\NotificationController;
-
-
+use App\Http\Controllers\Api\bookingcontroller;
 use App\Http\Controllers\Api\DoctorController;
+use App\Http\Controllers\Api\DoctorProfileController;
 use App\Http\Controllers\Api\MeNotificationsController;
 use App\Http\Controllers\Api\NotificationPreferencesController;
-use App\Http\Controllers\Api\SearchController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ReviewsController;
+use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Notification\NotificationController;
+use App\Http\Controllers\Notification\NotificationTestController;
 use App\Models\Reviews;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 
 
-use App\Http\Controllers\Api\bookingcontroller;
+    // Get all notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    // Mark one notification as read
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+    // Mark all notifications as read
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    // Get user preferences
+    Route::get('/notification-preferences', [NotificationController::class, 'preferences']);
+    // Update preference (enable/disable)
+    Route::patch('/notification-preferences', [NotificationController::class, 'updatePreference']);
 
-Route::middleware('auth:sanctum')->group(function () {
 
-    // Notification logs (history)
-    Route::get('/v1/notifications', [NotificationController::class, 'index']);
-    Route::patch('/v1/notifications/{id}/read', [NotificationController::class, 'markRead']);
-    Route::patch('/v1/notifications/read-all', [NotificationController::class, 'markAllRead']);
+
+    Route::get('/profile', [ProfileController::class,'show']);
+
+    Route::patch('/profile', [ProfileController::class,'update']);
+
+    Route::post('/profile/photo', [ProfileController::class,'uploadPhoto']);
+
+    Route::patch('/profile/password', [ProfileController::class,'updatePassword']);
+
+
+    Route::get('/doctor/profile', [DoctorProfileController::class, 'show']);
+    Route::patch('/doctor/profile', [DoctorProfileController::class, 'update']);
 
 });
+
 
 
 Route::get('/doctors/nearby', [DoctorController::class, 'getNearbyDoctors']);
