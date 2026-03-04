@@ -3,6 +3,7 @@ use App\Http\Controllers\Notification\NotificationController;
 
 
 use App\Http\Controllers\Api\DoctorController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\MeNotificationsController;
 use App\Http\Controllers\Api\NotificationPreferencesController;
 use App\Http\Controllers\Api\SearchController;
@@ -35,8 +36,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('reviews/getAll', [ReviewsController::class , 'getReview']);
 Route::apiResource('reviews', ReviewsController::class);
 
-
-
+Route::post('/payments/create-intent', [PaymentController::class, 'createPaymentIntent']);
+Route::post('/payments/webhook', [PaymentController::class, 'webhook']);
 
 
 Route::get('/user', function (Request $request) {
