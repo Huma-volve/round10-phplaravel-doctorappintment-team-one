@@ -56,5 +56,5 @@ Route::put('booking/{id}/update',[bookingcontroller::class,'update']);
 Route::get('doctorBookings',[bookingcontroller::class,'doctorBookings']);
 
 
-Route::get('/auth/google',[SocialAuthController::class,'redirectToGoogle']);
+Route::get('/auth/google/redirect',[SocialAuthController::class,'redirectToGoogle']);
 Route::get('/auth/google/callback',[SocialAuthController::class,'handleCallback']);

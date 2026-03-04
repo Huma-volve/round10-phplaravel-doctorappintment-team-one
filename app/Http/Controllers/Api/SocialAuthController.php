@@ -44,6 +44,7 @@ class SocialAuthController extends Controller
             $token = $user->createToken($user->name.'google-login')->plainTextToken;
 
             return response()->json([
+                'message' => 'Successfully logged in',
                 'user' => $user,
                 'token' => $token,
             ],200);
