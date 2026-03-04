@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -37,7 +35,8 @@ class SocialAuthController extends Controller
                     'social_id' => $googleUser->id,
                     'social_type' => 'google',
                     'password' => Hash::make(Str::random(24)),
-                    'role' => 'patient'
+                    'role' => 'patient',
+                    'status'=>'active'
                 ]);
             }
 
