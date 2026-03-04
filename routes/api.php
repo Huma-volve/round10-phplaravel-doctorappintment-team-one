@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Notification\NotificationController;
 
 
@@ -47,8 +49,12 @@ Route::get('/user', function (Request $request) {
 // Route::apiResource('booking',bookingcontroller::class);
 Route::get('/doctors/{doctor_id}/slots', [bookingcontroller::class, 'availableSlots']);
 Route::post('/appointments/book', [bookingcontroller::class, 'bookslot']);
-    //  ->middleware('auth:sanctum'); 
+    //  ->middleware('auth:sanctum');
     Route::get('/appointments/my', [bookingcontroller::class, 'myBookings']);
 Route::delete('/mybooking/{id}/cancel/',[bookingcontroller::class,'cancel']);
 Route::put('booking/{id}/update',[bookingcontroller::class,'update']);
 Route::get('doctorBookings',[bookingcontroller::class,'doctorBookings']);
+
+
+Route::get('/auth/google',[SocialAuthController::class,'redirectToGoogle']);
+Route::get('/auth/google/callback',[SocialAuthController::class,'handleCallback']);
