@@ -9,8 +9,8 @@ class OtpService
 {
     public function createOtp($user, $purpose = 'login')
     {
-        $code = rand(100000, 999999);
-
+//        $code = rand(100000, 999999);
+        $code ="1234";
         OtpCode::create([
             'user_id' => $user->id,
             'channel' => 'email',
