@@ -109,7 +109,6 @@ Route::prefix('v1')->name('v1.')->group(function () {
 // -----------------------------
 Route::post('/payments/create-intent', [PaymentController::class, 'createPaymentIntent']);
 Route::post('/payments/webhook', [PaymentController::class, 'webhook']);
-
 // Public user endpoint
 Route::get('/user', function (Request $request) {
     return $request->user();
