@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class MedicalRecord extends Model
 {
-        use HasFactory;
+    use HasFactory;
+
     public $table = 'medical_records';
+    
     protected $guarded = [];
 
     public function patient()

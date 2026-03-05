@@ -10,8 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable,HasApiTokens;
-
+use HasApiTokens, HasFactory, Notifiable;
     protected $guarded = [];
 
     public function doctor()
@@ -31,7 +30,7 @@ class User extends Authenticatable
 
     public function favorites()
     {
-        return $this->hasMany(Favorite::class, 'patient_id');
+        return $this->belongsToMany(Doctor::class, 'favorites', 'patient_id', 'doctor_id');
     }
 
     public function searchHistories()

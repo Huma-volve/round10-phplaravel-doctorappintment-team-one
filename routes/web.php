@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+
+Route::get('/', function () {
+    return view('welcome');
+});
 
 Route::post('/test-login', function (Request $request) {
     $request->validate([

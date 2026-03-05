@@ -7,7 +7,7 @@ use App\Http\Requests\ReviewStoreRequest;
 use App\Models\Review;
 use App\Models\Reviews;
 use Illuminate\Http\Request;
-
+use Illuminate\Validation\Rule;
 class ReviewsController extends Controller
 {
     /**
@@ -15,10 +15,10 @@ class ReviewsController extends Controller
      */
    
    
-public function getReview()
+public function show($id)
 {
    
-    $reviews = Review::all();
+    $reviews = Review::where('doctor_id',$id)->get();
 
     return response()->json([
         'status' => true,
@@ -33,6 +33,7 @@ public function getReview()
      */
     public function store(ReviewStoreRequest $request)
     {
+
        
         $data = $request->all();
         $reviews = Review::create($data);
@@ -53,62 +54,6 @@ public function getReview()
     /**
      * Display the specified resource.
      */
-    public function show($id)
-    {
-        $reviews = Review::find($id);
-        return  response()->json([
-                'status' => true,
-                'message' => 'show rewiew ' ,
-                'reviewData' => $reviews
-                ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update( $id , Request $request )  
-    {
-        $data['comment'] = $request->comment ;
-        $data['rating'] = $request->rating ;
-        $data['updated_at'] = now();
-        $reviews = Review::find($id);
-        $reviews->update($data);
-
     
-         if($reviews){
-
-            return  response()->json([
-                'status' => true,
-                'message' => 'updated rewiew seccuess'
-                ]);
-        }else{
-            return response()->json([
-                'status' => false,
-                'message' => 'updated rewiew faild'
-                ]);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $reviews = Review::find($id);
-        $reviews->delete();
-
     
-         if($reviews){
-
-            return  response()->json([
-                'status' => true,
-                'message' => 'delete rewiew seccuess'
-                ]);
-        }else{
-            return response()->json([
-                'status' => false,
-                'message' => 'delete rewiew faild'
-                ]);
-        }
-    }
 }

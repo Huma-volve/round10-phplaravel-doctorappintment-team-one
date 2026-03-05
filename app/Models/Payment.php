@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-        use HasFactory;
-        public $table = 'payments';
+    use HasFactory;
+
+    public $table = 'payments';
+    
     protected $guarded = [];
 
     protected $casts = [

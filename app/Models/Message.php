@@ -7,10 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
-    use HasFactory;
+        use HasFactory;
     public $table = 'messages';
-    public $timestamps = false;
-
     protected $guarded = [];
     public function conversation()
     {
