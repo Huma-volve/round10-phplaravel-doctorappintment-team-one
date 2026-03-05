@@ -63,8 +63,8 @@ Route::prefix('v1')->name('v1.')->group(function () {
 Route::get('v1/doctors/nearby', [DoctorController::class, 'getNearbyDoctors']);
 
 
-Route::get('reviews/getAll', [ReviewsController::class , 'getReview']);
-Route::apiResource('reviews', ReviewsController::class);
+
+Route::middleware('auth:sanctum')->apiResource('reviews', ReviewsController::class);
 
 Route::post('/payments/create-intent', [PaymentController::class, 'createPaymentIntent']);
 Route::post('/payments/webhook', [PaymentController::class, 'webhook']);
