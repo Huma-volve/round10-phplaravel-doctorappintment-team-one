@@ -22,7 +22,7 @@ class Doctor extends Model
 
     protected $appends = [
         'profile_image',
-        'avgRating'
+        'avg_rating'
     ];
 
     public function user()
@@ -74,9 +74,7 @@ class Doctor extends Model
     }
 
 
-    public function avgRating() : Attribute{
-        return new Attribute(
-            get: fn() => $this->reviews()->avg('rating') ?? 0,
-        );
+    public function getAvgRatingAttribute(){
+        return $this->reviews()->avg('rating');
     }
 }
