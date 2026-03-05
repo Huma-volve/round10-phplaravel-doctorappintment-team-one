@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+// Controllers
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\ReviewsController;
@@ -14,10 +18,9 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Notification\NotificationController;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-
-// Auth routes
+// -----------------------------
+// Auth Routes
+// -----------------------------
 Route::prefix('auth')->group(function () {
     Route::post('/login',[AuthController::class, 'login']);
     Route::post('/register',[AuthController::class, 'requestOtpForRegister']);
@@ -33,7 +36,9 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// Authenticated API
+// -----------------------------
+// Authenticated API Routes (v1)
+// -----------------------------
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 
     // Profile
@@ -71,7 +76,9 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::post('/search', [SearchController::class , 'search_for_doctor']);
 });
 
-// Public endpoints
+// -----------------------------
+// Public v1 Routes
+// -----------------------------
 Route::prefix('v1')->name('v1.')->group(function () {
 
     // Doctors
@@ -97,7 +104,9 @@ Route::prefix('v1')->name('v1.')->group(function () {
     Route::get('doctorBookings',[BookingController::class,'doctorBookings']);
 });
 
+// -----------------------------
 // Payments
+// -----------------------------
 Route::post('/payments/create-intent', [PaymentController::class, 'createPaymentIntent']);
 Route::post('/payments/webhook', [PaymentController::class, 'webhook']);
 
