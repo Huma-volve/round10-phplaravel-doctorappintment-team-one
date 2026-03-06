@@ -4,101 +4,116 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
+use App\Models\ConversationArchive;
 use App\Models\ConversationFavorite;
 use App\Models\Message;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ConversationController extends Controller
 {
-    public function unreadCount(Request $request, $conversationId)
+    public function unreadCount(Request $request, int $conversationId): JsonResponse
     {
-        $userId = $request->user_id;
+        $userId = $request->user()->id;
 
-        $count = Message::where('conversation_id', $conversationId)
-            ->where('sender_user_id', '!=', $userId)
+        $this->ensureUserBelongsToConversation($userId, $conversationId);
+
+        $unreadCount = Message::query()
+            ->where('conversation_id', $conversationId)
             ->whereNull('read_at_utc')
+            ->where('sender_user_id', '<>', $userId)
             ->count();
 
         return response()->json([
-            'unread_count' => $count
+            'unread_count' => $unreadCount,
         ]);
     }
-    public function markAsRead(Request $request, $conversationId)
+
+    public function markAsRead(Request $request, int $conversationId): JsonResponse
     {
-        $userId = $request->user_id;
+        $userId = $request->user()->id;
+
+        $this->ensureUserBelongsToConversation($userId, $conversationId);
 
         Message::where('conversation_id', $conversationId)
             ->where('sender_user_id', '!=', $userId)
             ->whereNull('read_at_utc')
             ->update([
-                'read_at_utc' => now()
+                'read_at_utc' => now(),
             ]);
 
         return response()->json([
-            'status' => 'messages marked as read'
+            'status' => 'messages marked as read',
         ]);
     }
-    public function toggleFavorite(Request $request, $conversation_id)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-        ]);
 
-        $fav = ConversationFavorite::where('user_id', $request->user_id)
-            ->where('conversation_id', $conversation_id)
+    public function toggleFavorite(Request $request, int $conversationId): JsonResponse
+    {
+        $userId = $request->user()->id;
+
+        $this->ensureUserBelongsToConversation($userId, $conversationId);
+
+        $favorite = ConversationFavorite::where('user_id', $userId)
+            ->where('conversation_id', $conversationId)
             ->first();
 
-        if ($fav) {
-            $fav->delete();
+        if ($favorite) {
+            $favorite->delete();
 
             return response()->json([
-                'conversation_id' => (int) $conversation_id,
-                'user_id' => (int) $request->user_id,
                 'is_favorite' => false,
             ]);
         }
 
         ConversationFavorite::create([
-            'user_id' => $request->user_id,
-            'conversation_id' => $conversation_id,
+            'user_id' => $userId,
+            'conversation_id' => $conversationId,
             'created_at' => now(),
         ]);
 
         return response()->json([
-            'conversation_id' => (int) $conversation_id,
-            'user_id' => (int) $request->user_id,
             'is_favorite' => true,
         ], 201);
     }
-    public function archiveConversation(Request $request, $conversation_id)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-        ]);
 
-        $arch = \App\Models\ConversationArchive::where('user_id', $request->user_id)
-            ->where('conversation_id', $conversation_id)
+    public function archiveConversation(Request $request, int $conversationId): JsonResponse
+    {
+        $userId = $request->user()->id;
+
+        $this->ensureUserBelongsToConversation($userId, $conversationId);
+
+        $archive = ConversationArchive::where('user_id', $userId)
+            ->where('conversation_id', $conversationId)
             ->first();
 
-        if ($arch) {
-            $arch->delete();
+        if ($archive) {
+            $archive->delete();
+
             return response()->json([
-                'conversation_id' => (int)$conversation_id,
-                'user_id' => (int)$request->user_id,
                 'is_archived' => false,
             ]);
         }
 
-        \App\Models\ConversationArchive::create([
-            'user_id' => $request->user_id,
-            'conversation_id' => $conversation_id,
+        ConversationArchive::create([
+            'user_id' => $userId,
+            'conversation_id' => $conversationId,
             'created_at' => now(),
         ]);
 
         return response()->json([
-            'conversation_id' => (int)$conversation_id,
-            'user_id' => (int)$request->user_id,
             'is_archived' => true,
         ], 201);
+    }
+
+    private function ensureUserBelongsToConversation(int $userId, int $conversationId): void
+    {
+        $exists = Conversation::where('id', $conversationId)
+            ->where(function ($query) use ($userId) {
+                $query->where('patient_id', $userId)
+                    ->orWhere('doctor_id', $userId);
+            })
+            ->exists();
+
+        abort_unless($exists, 403, 'Unauthorized');
     }
 }

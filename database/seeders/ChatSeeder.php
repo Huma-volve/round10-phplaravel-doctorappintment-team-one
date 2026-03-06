@@ -44,9 +44,6 @@ class ChatSeeder extends Seeder
                 // 'verification_status' => 'approved',
             ]
         );
-
-
-
         // Conversation
         Conversation::firstOrCreate(
             [

@@ -10,6 +10,8 @@ class Message extends Model
         use HasFactory;
     public $table = 'messages';
     protected $guarded = [];
+
+    public $timestamps = false;
     public function conversation()
     {
         return $this->belongsTo(Conversation::class);
