@@ -17,23 +17,25 @@ class MessageController extends Controller
 {
     public function index(Request $request, int $conversationId): JsonResponse
     {
-        $this->ensureUserBelongsToConversation($request->user()->id, $conversationId);
+        $userId = $request->user()->id;
+
+        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
+            return $this->forbiddenResponse();
+        }
 
         $messages = Message::query()
             ->where('conversation_id', $conversationId)
-            ->orderBy('id', 'asc')
-            ->get();
-
+            ->orderBy('id', 'asc')->paginate(20);
         return response()->json($messages);
     }
-
     public function store(MessageStoreRequest $request): JsonResponse
     {
-        $conversationId = $request->integer('conversation_id');
+        $conversationId = $request->route('conversation');
         $userId = $request->user()->id;
 
-        $this->ensureUserBelongsToConversation($userId, $conversationId);
-
+        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
+            return $this->forbiddenResponse();
+        }
         $message = DB::transaction(function () use ($request, $conversationId, $userId) {
             $message = Message::create([
                 'conversation_id'   => $conversationId,
@@ -61,11 +63,12 @@ class MessageController extends Controller
 
     public function sendMediaMessage(MediaMessageStoreRequest $request): JsonResponse
     {
-        $conversationId = $request->integer('conversation_id');
+        $conversationId = $request->route('conversation');
         $userId = $request->user()->id;
 
-        $this->ensureUserBelongsToConversation($userId, $conversationId);
-
+        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
+            return $this->forbiddenResponse();
+        }
         $file = $request->file('media');
         $mime = $file->getMimeType();
         $size = $file->getSize();
@@ -111,16 +114,21 @@ class MessageController extends Controller
             ]);
     }
 
-    private function ensureUserBelongsToConversation(int $userId, int $conversationId): void
+    private function ensureUserBelongsToConversation(int $userId, int $conversationId): bool
     {
-        $exists = Conversation::query()
+        return Conversation::query()
             ->whereKey($conversationId)
             ->where(function ($query) use ($userId) {
                 $query->where('patient_id', $userId)
-                      ->orWhere('doctor_id', $userId);
+                    ->orWhere('doctor_id', $userId);
             })
             ->exists();
-
-        abort_unless($exists, 403, 'You are not allowed to access this conversation.');
+    }
+    private function forbiddenResponse()
+    {
+        return response()->json([
+            'status' => false,
+            'message' => 'You are not allowed to access this conversation.'
+        ], 403);
     }
 }

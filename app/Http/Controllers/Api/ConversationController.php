@@ -12,12 +12,14 @@ use Illuminate\Http\Request;
 
 class ConversationController extends Controller
 {
+
     public function unreadCount(Request $request, int $conversationId): JsonResponse
     {
         $userId = $request->user()->id;
 
-        $this->ensureUserBelongsToConversation($userId, $conversationId);
-
+        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
+            return $this->forbiddenResponse();
+        }
         $unreadCount = Message::query()
             ->where('conversation_id', $conversationId)
             ->whereNull('read_at_utc')
@@ -33,8 +35,9 @@ class ConversationController extends Controller
     {
         $userId = $request->user()->id;
 
-        $this->ensureUserBelongsToConversation($userId, $conversationId);
-
+        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
+            return $this->forbiddenResponse();
+        }
         Message::where('conversation_id', $conversationId)
             ->where('sender_user_id', '!=', $userId)
             ->whereNull('read_at_utc')
@@ -51,8 +54,9 @@ class ConversationController extends Controller
     {
         $userId = $request->user()->id;
 
-        $this->ensureUserBelongsToConversation($userId, $conversationId);
-
+        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
+            return $this->forbiddenResponse();
+        }
         $favorite = ConversationFavorite::where('user_id', $userId)
             ->where('conversation_id', $conversationId)
             ->first();
@@ -80,8 +84,9 @@ class ConversationController extends Controller
     {
         $userId = $request->user()->id;
 
-        $this->ensureUserBelongsToConversation($userId, $conversationId);
-
+        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
+            return $this->forbiddenResponse();
+        }
         $archive = ConversationArchive::where('user_id', $userId)
             ->where('conversation_id', $conversationId)
             ->first();
@@ -105,15 +110,22 @@ class ConversationController extends Controller
         ], 201);
     }
 
-    private function ensureUserBelongsToConversation(int $userId, int $conversationId): void
+    private function ensureUserBelongsToConversation(int $userId, int $conversationId): bool
     {
-        $exists = Conversation::where('id', $conversationId)
+        return Conversation::query()
+            ->whereKey($conversationId)
             ->where(function ($query) use ($userId) {
                 $query->where('patient_id', $userId)
                     ->orWhere('doctor_id', $userId);
             })
             ->exists();
+    }
 
-        abort_unless($exists, 403, 'Unauthorized');
+    private function forbiddenResponse()
+    {
+        return response()->json([
+            'status' => false,
+            'message' => 'You are not allowed to access this conversation.'
+        ], 403);
     }
 }
