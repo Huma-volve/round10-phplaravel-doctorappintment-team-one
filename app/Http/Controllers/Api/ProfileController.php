@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -54,20 +53,16 @@ class ProfileController extends Controller
             'photo' => ['required','image','max:2048']
         ]);
 
-        $user = $request->user();
+        $user = $request->user();   
 
-        $path = $request->file('photo')->store('profile_photos','public');
-
-        $user->photo_url = Storage::url($path);
+        $image_name = $request->photo->getClientOriginalName();
+        $image_name = time() . rand(1, 10000) . '_' . $image_name;
+        $request->photo->move(public_path('uploads/profile_photos/'), $image_name);
+        
+        $user->photo_url = $image_name;
         $user->save();
         
         
-        $user->load([
-            'bookings' => fn($q) => $q->orderBy('created_at', 'desc'),
-            'reviews',
-            'favorites',
-            'doctor' => fn($q) => $q->with(['specialties', 'clinics', 'reviews', 'bookings'])
-        ]);
 
         return response()->json([
             'message' => 'Photo updated successfully',
@@ -116,9 +111,10 @@ class ProfileController extends Controller
         
         if ($user->photo_url) {
             try {
-               
-                $path = str_replace('/storage/', '', $user->photo_url);
-                Storage::disk('public')->delete($path);
+                $file_path = public_path('uploads/profile_photos/' . $user->photo_url);
+                if (file_exists($file_path)) {
+                    unlink($file_path);
+                }
             } catch (\Exception $e) {
               
             }
