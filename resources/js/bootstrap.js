@@ -8,7 +8,7 @@ window.Pusher = require('pusher-js');
 window.echo = new Echo({
     broadcaster: 'pusher',
     key: 'your-pusher-key',
-    cluster: 'mt1',
+    cluster: 'eu',
     forceTLS: true
 });
 
