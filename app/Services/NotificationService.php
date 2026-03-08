@@ -32,7 +32,7 @@ class NotificationService
             return;
         }
 
-        // Store in DB (always)
+        
         $notification = NotificationLog::create([
             'user_id' => $userId,
             'type' => $event,
@@ -43,16 +43,16 @@ class NotificationService
             'sent_at_utc' => now(),
         ]);
 
-        // Send email if needed
-        if ($channel === 'email' && $user->email) {
-            Mail::raw($body, function ($message) use ($user, $title) {
-                $message->to($user->email)
-                        ->subject($title);
-            });
+        // // Send email if needed
+        // if ($channel === 'email' && $user->email) {
+        //     Mail::raw($body, function ($message) use ($user, $title) {
+        //         $message->to($user->email)
+        //                 ->subject($title);
+        //     });
 
-            $notification->update([
-                'provider_message_id' => 'email_sent'
-            ]);
-        }
+        //     $notification->update([
+        //         'provider_message_id' => 'email_sent'
+        //     ]);
+        // }
     }
 }

@@ -23,7 +23,7 @@ class UserVerifyOtp extends FormRequest
     {
         return [
             'email' => 'required|email',
-            'otp' => 'required|digits:6',
+            'otp' => 'required|digits:4',
             'purpose' => 'required|string|in:login,verify_email,reset_password',
         ];
     }

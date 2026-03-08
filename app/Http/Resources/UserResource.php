@@ -33,10 +33,10 @@ class UserResource extends JsonResource
             'is_active' => $this->status === 'active',
             'is_verified' => $this->email_verified_at !== null,
             
-            // Doctor Details (if user is a doctor)
-            'doctor' => $this->when($this->role === 'doctor' && $this->relationLoaded('doctor'), function () {
-                return $this->doctor ? new DoctorDetailsResource($this->doctor) : null;
-            }),
+            // // Doctor Details (if user is a doctor)
+            // 'doctor' => $this->when($this->role === 'doctor' && $this->relationLoaded('doctor'), function () {
+            //     return $this->doctor ? new DoctorDetailsResource($this->doctor) : null;
+            // }),
             
             'social_id' => $this->whenNotNull($this->social_id),
             'social_type' => $this->whenNotNull($this->social_type),
