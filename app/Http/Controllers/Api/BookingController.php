@@ -12,7 +12,7 @@ use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
 use Symfony\Component\CssSelector\Node\FunctionNode;
 
-class bookingcontroller extends Controller
+class Bookingcontroller extends Controller
 {
 
     public function availableSlots($doctor_id)
@@ -52,12 +52,16 @@ class bookingcontroller extends Controller
 
         $slots->save();
         app(NotificationService::class)->notify(
-            $slots->doctor_id,
+            $slots->doctor->user_id,
             'booking',
             'in_app',
             'New Booking Confirmed',
             'A new booking has been confirmed.',
-            ['booking_id' => $booking->id]
+             [
+                'booking_id' => $booking->id,
+                'patient_id' => $booking->patient_id,
+                'time_slot_id' => $slots->id,
+            ]
         );
         
 
@@ -115,12 +119,16 @@ class bookingcontroller extends Controller
         $booking->load(['patient', 'doctor', 'doctor.user', 'timeSlot', 'review']);
         
         app(NotificationService::class)->notify(
-            $booking->doctor_id,
+            $booking->doctor->user_id,
             'cancellation',
             'in_app',
             'Booking Cancelled',
             'A patient has cancelled their appointment.',
-            ['booking_id' => $booking->id]
+            [
+                'booking_id' => $booking->id,
+                'patient_id' => $booking->patient_id,
+                'time_slot_id' => $slot->id,
+            ]
         );
 
         return response()->json([
@@ -183,12 +191,16 @@ class bookingcontroller extends Controller
         $oldBooking->load(['patient', 'doctor', 'doctor.user', 'timeSlot', 'review']);
         
         app(NotificationService::class)->notify(
-            $oldBooking->doctor_id,
+            $oldBooking->doctor->user_id,
             'booking',
             'in_app',
             'Booking Rescheduled',
             'A patient has rescheduled their appointment.',
-            ['booking_id' => $oldBooking->id]
+            [
+                'booking_id' => $oldBooking->id,
+                'patient_id' => $oldBooking->patient_id,
+                'time_slot_id' => $newSlot->id,
+            ]
         );
 
         return response()->json([

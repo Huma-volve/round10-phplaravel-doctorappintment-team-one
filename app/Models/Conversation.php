@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Conversation extends Model
 {
-        use HasFactory;
+    use HasFactory;
     public $table = 'conversations';
     protected $guarded = [];
-
+    protected $casts = [
+        'patient_id' => 'integer',
+        'doctor_id' => 'integer',
+        'is_read' => 'boolean',
+        'last_message_at_utc' => 'datetime',
+    ];
     public function patient()
     {
         return $this->belongsTo(User::class, 'patient_id');

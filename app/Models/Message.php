@@ -7,12 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
-    use HasFactory;
-
-    public $table = 'messages';
-    
+        use HasFactory;
     protected $guarded = [];
 
+    public $timestamps = false;
     public function conversation()
     {
         return $this->belongsTo(Conversation::class);

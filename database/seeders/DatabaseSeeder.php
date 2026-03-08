@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Clinic;
 use App\Models\Doctor;
+use App\Models\DoctorTimeSlot;
 use App\Models\Specialty;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -84,6 +85,9 @@ class DatabaseSeeder extends Seeder
                 // }
             }
         });
+
+        // Call the DoctorTimeSlotSeeder
+        $this->call(DoctorTimeSlotSeeder::class);
     }
 
 }
