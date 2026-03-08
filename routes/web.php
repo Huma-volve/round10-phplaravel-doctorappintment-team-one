@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('master');
 });
 
 Route::post('/test-login', function (Request $request) {
