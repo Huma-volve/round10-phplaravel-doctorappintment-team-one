@@ -12,7 +12,7 @@ use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
 use Symfony\Component\CssSelector\Node\FunctionNode;
 
-class BookingController extends Controller
+class Bookingcontroller extends Controller
 {
 
     public function availableSlots($doctor_id)
