@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 
 class NotificationController extends Controller
 {
-    // ✅ GET /api/notifications?unread=1&limit=20
+    
     public function index(Request $request)
     {
         $user = $request->user();
@@ -29,7 +29,7 @@ class NotificationController extends Controller
         );
     }
 
-    // ✅ PATCH /api/notifications/{id}/read
+  
     public function markRead(Request $request, int $id)
     {
         $user = $request->user();
@@ -48,7 +48,6 @@ class NotificationController extends Controller
         ]);
     }
 
-    // ✅ PATCH /api/notifications/read-all
     public function markAllRead(Request $request)
     {
         $user = $request->user();
@@ -62,7 +61,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    // ✅ GET /api/notification-preferences
+   
     public function preferences(Request $request)
     {
         $user = $request->user();
@@ -75,7 +74,6 @@ class NotificationController extends Controller
         return response()->json($prefs);
     }
 
-    // ✅ PATCH /api/notification-preferences
     public function updatePreference(Request $request)
     {
         $user = $request->user();

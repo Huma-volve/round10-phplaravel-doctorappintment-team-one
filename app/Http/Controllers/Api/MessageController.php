@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Events\MessageSent; // تضمين الحدث
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -46,6 +47,19 @@ class MessageController extends Controller
             Conversation::whereKey($validated['conversation_id'])
                 ->update(['last_message_at_utc' => now()]);
 
+            // Notify the recipient of the message
+            $conversation = Conversation::findOrFail($validated['conversation_id']);
+            $recipientId = $conversation->patient_id == $validated['sender_user_id'] ? $conversation->doctor->user_id : $conversation->patient_id;
+            
+            app(NotificationService::class)->notify(
+                $recipientId,
+                'chat',
+                'in_app',
+                'New Message',
+                'You have a new message: ' . substr($validated['body'], 0, 50),
+                ['message_id' => $message->id, 'conversation_id' => $conversation->id]
+            );
+
             broadcast(new MessageSent($message));
 
             return response()->json($message, 201);
@@ -85,6 +99,19 @@ class MessageController extends Controller
 
         Conversation::where('id', $request->conversation_id)
             ->update(['last_message_at_utc' => now()]);
+
+        // Notify the recipient of the media message
+        $conversation = Conversation::find($request->conversation_id);
+        $recipientId = $conversation->patient_id == $request->sender_user_id ? $conversation->doctor->user_id : $conversation->patient_id;
+        
+        app(NotificationService::class)->notify(
+            $recipientId,
+            'chat',
+            'in_app',
+            'New Message',
+            'You received a ' . $type . ' message',
+            ['message_id' => $message->id, 'conversation_id' => $conversation->id]
+        );
 
         broadcast(new \App\Events\MessageSent($message))->toOthers();
 

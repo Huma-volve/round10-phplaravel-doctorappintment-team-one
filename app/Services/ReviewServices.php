@@ -29,14 +29,17 @@ class ReviewServices
           // save reviews 
           $reviews = Review::create($dataReview);
           if($reviews){
-               // send notifiaction services
+               // Get doctor's user_id from Doctor model
+               $doctor = \App\Models\Doctor::find($data->doctor_id);
+               
+               // send notification to doctor
                $this->notificationService->notify(
-                    $data->doctor_id,
+                    $doctor->user_id,
                     "review", 
-                    'email' , 
-                    'Review Doctor' , 
-                    $data->comment , 
-                    ['rating'=>$data->rating , 'comment'=>$data->comment]
+                    'in_app' , 
+                    'New Review' , 
+                    'You received a new review from a patient: ' . substr($data->comment, 0, 50) . '...' , 
+                    ['rating'=>$data->rating , 'comment'=>$data->comment, 'review_id'=>$reviews->id]
                );
 
                return  true ;

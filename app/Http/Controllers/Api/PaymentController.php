@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
@@ -65,6 +66,17 @@ $booking = Booking::findOrFail($payment->booking_id);
             $booking->status='confirmed';
             $booking->payment_status ='paid';
             $booking->save();
+            
+            // Notify patient of successful payment
+            app(NotificationService::class)->notify(
+                $booking->patient_id,
+                'payment',
+                'in_app',
+                'Payment Successful',
+                'Your payment has been processed successfully. Your booking is confirmed.',
+                ['booking_id' => $booking->id,
+                 'payment_id' => $payment->id]
+            );
          }
     }
         return response()->json(['message' => 'Webhook received.'], 200);
