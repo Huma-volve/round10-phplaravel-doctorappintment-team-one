@@ -61,7 +61,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'otp' => 'required|digits:6',
+            'otp' => 'required|digits:4',
             'password' => 'required|confirmed|min:8'
         ]);
 

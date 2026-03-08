@@ -60,7 +60,7 @@ class DoctorController extends Controller
 
         // add doctor to search history for auth user
         SearchHistory::create([
-            'patient_id'   => auth()->id(),
+            'patient_id'   =>1,
             'doctor_id'    => $doctor->id,
             'created_at'   => now(),
             'updated_at'   => now(),
