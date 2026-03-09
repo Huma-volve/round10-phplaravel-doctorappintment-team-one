@@ -54,7 +54,7 @@
                <span class="d-none d-lg-inline-flex">Notificatin</span>
           </a>
           <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-               <a href="#" class="dropdown-item">
+               {{-- <a href="#" class="dropdown-item">
                     <h6 class="fw-normal mb-0">Profile updated</h6>
                     <small>15 minutes ago</small>
                </a>
@@ -67,7 +67,7 @@
                <a href="#" class="dropdown-item">
                     <h6 class="fw-normal mb-0">Password changed</h6>
                     <small>15 minutes ago</small>
-               </a>
+               </a> --}}
                <hr class="dropdown-divider">
                <a href="#" class="dropdown-item text-center">See all notifications</a>
           </div>

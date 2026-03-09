@@ -41,6 +41,15 @@ class ReviewServices
                     'You received a new review from a patient: ' . substr($data->comment, 0, 50) . '...' , 
                     ['rating'=>$data->rating , 'comment'=>$data->comment, 'review_id'=>$reviews->id]
                );
+               
+               // send notification to admin
+               $this->notificationService->notifyAdmin(
+                    "review", 
+                    'in_app' , 
+                    'New Review Submitted' , 
+                    'A new review has been submitted for a doctor.' , 
+                    ['rating'=>$data->rating , 'comment'=>$data->comment, 'review_id'=>$reviews->id, 'doctor_id'=>$data->doctor_id]
+               );
 
                return  true ;
           }else{
