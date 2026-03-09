@@ -20,6 +20,8 @@ class DoctorController extends Controller
     public function store(CreateDoctorRequest $request)
     {
 //        $password = Str::random(8);
+//        TODO send email
+        // we can send email with password to doctor but to be known for team member
         $password = '12345678';
         $user = User::create([
             'name'=>$request->name,
@@ -42,5 +44,6 @@ class DoctorController extends Controller
         return redirect()->route('admin.doctors.create')
             ->with('success','Doctor created successfully');
     }
+
 
 }

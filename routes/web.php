@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Web\Admin\DoctorController;
+use App\Http\Controllers\Web\Doctor\ProfileController;
+use App\Http\Controllers\Web\Doctor\ScheduleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,4 +45,12 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
 
     Route::post('/doctors',[DoctorController::class,'store'])->name('doctors.store');
 
+});
+
+Route::middleware(['auth','role:doctor'])->prefix('doctor')->name('doctor.')->group(function(){
+
+    Route::get('/profile',[ProfileController::class,'index'])->name('profile');
+    Route::post('/change-password',[ProfileController::class,'changePassword'])->name('change.password');
+
+    Route::get('/schedules',[ScheduleController::class,'index'])->name('schedules.index');
 });
