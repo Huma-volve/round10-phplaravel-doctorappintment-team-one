@@ -52,8 +52,8 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
-    Route::get('/notification-preferences', [NotificationController::class, 'preferences']);
-    Route::patch('/notification-preferences', [NotificationController::class, 'updatePreference']);
+    // Route::get('/notification-preferences', [NotificationController::class, 'preferences']);
+    // Route::patch('/notification-preferences', [NotificationController::class, 'updatePreference']);
 
     // Bookings
     Route::post('/appointments/book', [BookingController::class, 'bookslot']);

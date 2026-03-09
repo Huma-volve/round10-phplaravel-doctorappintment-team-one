@@ -3,38 +3,36 @@
 namespace App\Http\View\Composers;
 
 use App\Models\NotificationLog;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class NotificationComposer
 {
-    /**
-     * Bind data to the view.
-     */
     public function compose(View $view): void
     {
-        try {
-            $admin = User::where('role', 'admin')->first();
+        $user = Auth::user();
 
-            $notifications = [];
-            $unreadCount = 0;
-            
-            if ($admin) {
-                $notifications = NotificationLog::where('user_id', $admin->id)
-                    ->orderByDesc('created_at')
-                    ->limit(5)
-                    ->get();
-                
-                $unreadCount = NotificationLog::where('user_id', $admin->id)
-                    ->whereNull('read_at_utc')
-                    ->count();
-            }
-
-            $view->with('notifications', $notifications);
-            $view->with('unreadCount', $unreadCount);
-        } catch (\Exception $e) {
-            $view->with('notifications', []);
-            $view->with('unreadCount', 0);
+        if (!$user) {
+            $view->with([
+                'notifications' => collect(),
+                'unreadCount' => 0,
+            ]);
+            return;
         }
+
+        $notifications = NotificationLog::where('user_id', $user->id)
+            ->latest('created_at')
+            ->limit(5)
+            ->get();
+
+        $unreadCount = NotificationLog::where('user_id', $user->id)
+            ->whereNull('read_at_utc')
+            ->count();
+
+        $view->with([
+            'notifications' => $notifications,
+            'unreadCount' => $unreadCount,
+            'loggedInRole' => $user->role,
+        ]);
     }
 }

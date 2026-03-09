@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Web\Admin\NotificationController;
 use App\Http\Controllers\Web\Auth\AuthController;
 
 Route::get('/', function () {
@@ -79,4 +79,19 @@ Route::middleware(['auth','role:doctor'])->prefix('doctor')->name('doctor.')->gr
 
     Route::post('/profile/clinics', [ProfileController::class, 'addClinic'])
         ->name('profile.add.clinic');
+});
+Route::middleware(['auth'])->group(function(){
+
+  
+    /// Notifications
+       Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::get('/notifications/type/{type}', [NotificationController::class, 'getByType'])->name('notifications.by-type');
+    Route::get('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');
+
+
+
 });

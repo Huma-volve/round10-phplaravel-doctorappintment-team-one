@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\NotificationLog;
@@ -10,70 +10,69 @@ use Illuminate\Http\Request;
 class NotificationController extends Controller
 {
     
-    public function index()
-    {
-        $admin = User::where('role', 'admin')->first();
+ public function index()
+{
+    $user = auth()->user();
 
-        if (!$admin) {
-            return redirect()->back()->with('error', 'Admin not found');
-        }
-
-        $notifications = NotificationLog::where('user_id', $admin->id)
-            ->orderByDesc('created_at')
-            ->paginate(15);
-
-        return view('admin.notifications.index', compact('notifications'));
+    if (!$user) {
+        return redirect()->back()->with('error', 'Unauthorized');
     }
 
+    $notifications = NotificationLog::where('user_id', $user->id)
+        ->orderByDesc('created_at')
+        ->paginate(15);
+
+    return view('admin.notifications.index', compact('notifications'));
+}
     
-    public function unreadCount()
-    {
-        $admin = User::where('role', 'admin')->first();
+    // public function unreadCount()
+    // {
+    //     $admin = User::where('role', 'admin')->first();
 
-        if (!$admin) {
-            return 0;
-        }
+    //     if (!$admin) {
+    //         return 0;
+    //     }
 
-        $unreadCount = NotificationLog::where('user_id', $admin->id)
-            ->whereNull('read_at_utc')
-            ->count();
+    //     $unreadCount = NotificationLog::where('user_id', $admin->id)
+    //         ->whereNull('read_at_utc')
+    //         ->count();
 
-        return response()->json(['unread_count' => $unreadCount]);
-    }
+    //     return response()->json(['unread_count' => $unreadCount]);
+    // }
 
   
-    public function getByType($type)
-    {
-        $admin = User::where('role', 'admin')->first();
+    // public function getByType($type)
+    // {
+    //     $admin = User::where('role', 'admin')->first();
 
-        if (!$admin) {
-            return redirect()->back()->with('error', 'Admin not found');
-        }
+    //     if (!$admin) {
+    //         return redirect()->back()->with('error', 'Admin not found');
+    //     }
 
-        $notifications = NotificationLog::where('user_id', $admin->id)
-            ->where('type', $type)
-            ->orderByDesc('created_at')
-            ->paginate(15);
+    //     $notifications = NotificationLog::where('user_id', $admin->id)
+    //         ->where('type', $type)
+    //         ->orderByDesc('created_at')
+    //         ->paginate(15);
 
-        return view('admin.notifications.by-type', compact('notifications', 'type'));
-    }
+    //     return view('admin.notifications.by-type', compact('notifications', 'type'));
+    // }
 
     
-    public function unread()
-    {
-        $admin = User::where('role', 'admin')->first();
+    // public function unread()
+    // {
+    //     $admin = User::where('role', 'admin')->first();
 
-        if (!$admin) {
-            return redirect()->back()->with('error', 'Admin not found');
-        }
+    //     if (!$admin) {
+    //         return redirect()->back()->with('error', 'Admin not found');
+    //     }
 
-        $notifications = NotificationLog::where('user_id', $admin->id)
-            ->whereNull('read_at_utc')
-            ->orderByDesc('created_at')
-            ->paginate(15);
+    //     $notifications = NotificationLog::where('user_id', $admin->id)
+    //         ->whereNull('read_at_utc')
+    //         ->orderByDesc('created_at')
+    //         ->paginate(15);
 
-        return view('admin.notifications.unread', compact('notifications'));
-    }
+    //     return view('admin.notifications.unread', compact('notifications'));
+    // }
 
    
     public function markAsRead($id)
@@ -93,7 +92,8 @@ class NotificationController extends Controller
             $notification->save();
         }
 
-        return response()->json(['message' => 'Notification marked as read']);
+        
+         return redirect()->back()->with('success', 'Notification marked as readorized');
     }
 
    
@@ -109,9 +109,9 @@ class NotificationController extends Controller
             ->whereNull('read_at_utc')
             ->update(['read_at_utc' => now()]);
 
-        return response()->json(['message' => 'All notifications marked as read']);
-    }
+               return redirect()->back()->with('success', 'Notifications marked as read');
 
+    }
    
     public function delete($id)
     {
@@ -127,33 +127,8 @@ class NotificationController extends Controller
 
         $notification->delete();
 
-        return response()->json(['message' => 'Notification deleted']);
+                return redirect()->back()->with('success', 'Notification deleted');
+
     }
 }
    
-//     public function statistics()
-//     {
-//         $admin = User::where('role', 'admin')->first();
-
-//         if (!$admin) {
-//             return response()->json(['message' => 'Admin not found'], 404);
-//         }
-
-//         $stats = [
-//             'total' => NotificationLog::where('user_id', $admin->id)->count(),
-//             'unread' => NotificationLog::where('user_id', $admin->id)->whereNull('read_at_utc')->count(),
-//             'by_type' => NotificationLog::where('user_id', $admin->id)
-//                 ->selectRaw('type, count(*) as count')
-//                 ->groupBy('type')
-//                 ->get()
-//                 ->pluck('count', 'type'),
-//             'by_channel' => NotificationLog::where('user_id', $admin->id)
-//                 ->selectRaw('channel, count(*) as count')
-//                 ->groupBy('channel')
-//                 ->get()
-//                 ->pluck('count', 'channel'),
-//         ];
-
-//         return response()->json($stats);
-//     }
-// }
