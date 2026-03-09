@@ -12,7 +12,7 @@ class ProfileController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $doctor = $user->doctor()->first();
+        $doctor = $user->doctor()->with('specialties')->first();
 
         return view('doctor.profile', compact('user', 'doctor'));
     }
@@ -40,5 +40,18 @@ class ProfileController extends Controller
         return back()->with('success', 'Password updated successfully');
     }
 
+    public function updateSpecialties(Request $request)
+    {
+        $doctor = auth()->user()->doctor;
 
+        $request->validate([
+            'specialties' => 'required|array|min:1',
+            'specialties.*' => 'exists:specialties,id',
+        ]);
+
+        $doctor->specialties()->sync($request->specialties);
+
+        return redirect()->route('doctor.profile')
+            ->with('success', 'Specialties updated successfully');
+    }
 }

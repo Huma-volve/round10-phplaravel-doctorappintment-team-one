@@ -14,7 +14,9 @@ class DoctorController extends Controller
 {
     public function create()
     {
-        return view('admin.doctors.create');
+        $specialties = \App\Models\Specialty::all();
+
+        return view('admin.doctors.create', compact('specialties'));
     }
 
     public function store(CreateDoctorRequest $request)
@@ -32,7 +34,7 @@ class DoctorController extends Controller
             'status'=>'active'
         ]);
 
-        Doctor::create([
+       $doctor =  Doctor::create([
             'user_id'=>$user->id,
             'bio'=>$request->bio,
             'years_of_experience'=>$request->years_of_experience,
@@ -40,6 +42,7 @@ class DoctorController extends Controller
             'verification_status'=>'approved'
         ]);
 
+        $doctor->specialties()->attach($request->specialties);
 
         return redirect()->route('admin.doctors.create')
             ->with('success','Doctor created successfully');

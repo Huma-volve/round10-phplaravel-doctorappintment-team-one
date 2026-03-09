@@ -15,7 +15,13 @@
             <p><strong>Phone:</strong> {{ $user->phone }}</p>
             <p><strong>Bio:</strong> {{ $doctor->bio }}</p>
             <p><strong>Years Of Experience:</strong> {{ $doctor->years_of_experience }} years</p>
-
+            <p><strong>Specialties:</strong>
+                @if($doctor->specialties->isEmpty())
+                    Not assigned
+                @else
+                    {{ $doctor->specialties->pluck('name')->join(', ') }}
+                @endif
+            </p>
         </div>
 
         <h4>Change Password</h4>
@@ -36,7 +42,7 @@
             </div>
         @endif
 
-        <a href="#" onclick="togglePasswordForm()" class="btn btn-primary">
+        <a href="#" onclick="togglePasswordForm()" class="btn btn-primary mb-3">
             Change Password
         </a>
 
@@ -62,11 +68,46 @@
                 <button class="btn btn-success">Update Password</button>
             </form>
         </div>
+        <!-- Button to toggle specialties form -->
+        <a href="#" onclick="toggleSpecialtyForm()" class="btn btn-primary mb-3">
+            Edit Specialties
+        </a>
 
+        <!-- Hidden form -->
+        <div id="specialtyForm" style="display:none; margin-top:15px;">
+            <form method="POST" action="{{ route('doctor.profile.update.specialties') }}">
+                @csrf
+
+                <div class="mb-3">
+                    <label>Edit Specialties</label>
+                    <select name="specialties[]" class="form-control" multiple>
+                        @foreach(\App\Models\Specialty::all() as $specialty)
+                            <option value="{{ $specialty->id }}"
+                                    @if($doctor->specialties->contains($specialty->id)) selected @endif>
+                                {{ $specialty->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple specialties</small>
+                </div>
+
+                <button class="btn btn-success">Update Specialties</button>
+            </form>
+        </div>
     </div>
         <script>
             function togglePasswordForm() {
                 var form = document.getElementById("passwordForm");
+
+                if (form.style.display === "none") {
+                    form.style.display = "block";
+                } else {
+                    form.style.display = "none";
+                }
+            }
+
+            function toggleSpecialtyForm() {
+                var form = document.getElementById("specialtyForm");
 
                 if (form.style.display === "none") {
                     form.style.display = "block";
