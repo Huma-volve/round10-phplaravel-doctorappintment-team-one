@@ -36,6 +36,10 @@
                     <a href="blank.html" class="dropdown-item">Blank Page</a>
                </div>
           </div>
+              <div class="navbar-nav w-100">
+                  @if(auth()->check() && auth()->user()->role === 'admin')
+                  <a  href="{{ route('admin.doctors.create') }}" class="nav-item nav-link "><i class="fa fa-tachometer-alt me-2"></i>Add Doctor</a>
+                  @endif
           </div>
      </nav>
 </div>
