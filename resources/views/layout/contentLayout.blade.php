@@ -1,9 +1,9 @@
 @extends('master')
 
-@section('title', ' المورين  ')
+@section('title', '')
 
 @section("content")
 
-    
+
 @endsection
 
