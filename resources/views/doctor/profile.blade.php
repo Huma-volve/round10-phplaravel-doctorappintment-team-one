@@ -60,7 +60,15 @@
                     <label>Address</label>
                     <input type="text" name="address" class="form-control">
                 </div>
+                <div class="mb-3">
+                    <label>Latitude</label>
+                    <input type="text" name="lat" class="form-control" placeholder="e.g. 30.0444">
+                </div>
 
+                <div class="mb-3">
+                    <label>Longitude</label>
+                    <input type="text" name="lng" class="form-control" placeholder="e.g. 31.2357">
+                </div>
                 <div class="mb-3">
                     <label>Start Time</label>
                     <input type="time" name="start_time" class="form-control">

@@ -32,6 +32,8 @@ class AddClinicRequest extends FormRequest
             'session_duration_minutes' => 'required|integer|min:1',
             'session_price_cents' => 'required|integer|min:0',
             'currency' => 'required|string|max:5',
+            'lat' => 'nullable|numeric|between:-90,90',
+            'lng' => 'nullable|numeric|between:-180,180',
         ];
     }
 }
