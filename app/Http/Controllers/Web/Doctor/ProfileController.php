@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Web\Doctor;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\AddClinicRequest;
+use App\Models\Clinic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -72,5 +74,26 @@ class ProfileController extends Controller
 
         return redirect()->route('doctor.profile')
             ->with('success', 'Profile updated successfully');
+    }
+
+    public function addClinic(AddClinicRequest $request)
+    {
+        $doctor = auth()->user()->doctor;
+
+        Clinic::create([
+            'doctor_id' => $doctor->id,
+            'name' => $request->name,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'address' => $request->address,
+            'lat' => '123' ,
+            'lng' => '234' ,
+            'session_duration_minutes' => $request->session_duration_minutes,
+            'session_price_cents' => $request->session_price_cents,
+            'currency' => $request->currency,
+        ]);
+
+        return redirect()->route('doctor.profile')
+            ->with('success', 'Clinic added successfully');
     }
 }
