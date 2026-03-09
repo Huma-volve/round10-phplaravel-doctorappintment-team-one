@@ -1,31 +1,34 @@
 @extends('master')
 
-@section('title', ' Policies Create ')
+@section('title', ' FAQs  ')
 
 @section("content")
 
 
-<form action="/Policies" method="POST">
+<form action="{{ route('admin.Faqs.update', $Faq->id) }}" method="POST">
+     
      @csrf
+    @method('PUT')
+
      <div class="col-12" style="margin-top: 10px; padding-right: 10px;">
 
           <div class="bg-light rounded h-100 p-4">
                <div class="row">
                     <div class="col-10" style="margin-top: 20px;">
-                         <h6 class="mb-4">Policy Create</h6>
+                         <h6 class="mb-4">FAQ Edit</h6>
                     </div>
                     <div class="col-2">
-                         <a href="/Policies"> All Policies </a> <br>
-                         <button type="submit" class="btn btn-primary m-2">save</button>
+                         <a href="/admin/Faqs"> All Question </a> <br>
+                         <button type="submit" class="btn btn-primary m-2">Update</button>
                     </div>
                </div>
                <div class="table-responsive">
                     
-                         
+                        
                          <div class="mb-3">
-                              <label for="exampleInputEmail1" class="form-label">Title</label>
-                              <input type="text" class="form-control" name="title" >
-                              @error('title')
+                              <label for="exampleInputEmail1" class="form-label">Questions</label>
+                              <input type="text" class="form-control" name="question"  value="{{ $Faq->question }}">
+                              @error('question')
                                    <div class="alert alert-danger" role="alert" style="margin-top: 10px;">
                                         {{$message}}
                                    </div>
@@ -34,9 +37,11 @@
                               
                          </div>
                          <div class="mb-3">
-                              <label for="exampleInputPassword1" class="form-label">Content</label>
-                              <textarea name="contentent" class="form-control" col="10"></textarea>
-                              @error('contentent')
+                              <label for="exampleInputPassword1" class="form-label">Answer</label>
+                              <textarea name="answer" class="form-control" col="10">
+                                   {{ $Faq->answer }}
+                              </textarea>
+                              @error('answer')
                                    <div class="alert alert-danger" role="alert" style="margin-top: 10px;">
                                         {{$message}}
                                    </div>
@@ -47,13 +52,13 @@
           </div>
      </div>
      <div class="col-12" style="margin-top: 10px;">
-          @if ($submitMessage == "Created Policy Succefully")
+          @if ($submitMessage == "Update Question Succefully")
                     <div class="alert alert-success" role="alert">
                          {{$submitMessage}}
                     </div>
                
 
-          @elseif($submitMessage == "Created Policy Faild")
+          @elseif($submitMessage == "Update Question Faild")
                <div class="alert alert-danger" role="alert">
                     {{$submitMessage}}
                </div>

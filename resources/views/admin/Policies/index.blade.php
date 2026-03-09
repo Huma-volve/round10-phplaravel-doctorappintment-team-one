@@ -1,18 +1,18 @@
 @extends('master')
 
-@section('title', ' FAQs  ')
+@section('title', ' Policies  ')
 
 @section("content")
 
 
 <div class="col-12" style="margin-top: 10px;">
-          @if ($submitMessage == "Delete Question Succefully")
+          @if ($submitMessage == "Delete Policy Succefully")
                     <div class="alert alert-success" role="alert">
                          {{$submitMessage}}
                     </div>
                
 
-          @elseif($submitMessage == "Delete Question Faild")
+          @elseif($submitMessage == "Delete Policy Faild")
                <div class="alert alert-danger" role="alert">
                     {{$submitMessage}}
                </div>
@@ -24,10 +24,10 @@
      <div class="bg-light rounded h-100 p-4">
           <div class="row">
                <div class="col-10">
-                    <h6 class="mb-4">FAQS</h6>
+                    <h6 class="mb-4">Policies</h6>
                </div>
                <div class="col-2">
-                    <a href="/Faqs/create" type="button" class="btn btn-primary m-2">Add</a>
+                    <a href="/Policies/create" type="button" class="btn btn-primary m-2">Add</a>
                </div>
           </div>
           <div class="table-responsive">
@@ -35,26 +35,26 @@
                     <thead>
                     <tr>
                          <th scope="col">#</th>
-                         <th scope="col">Questions</th>
-                         <th scope="col">Answer</th>
+                         <th scope="col">Title</th>
+                         <th scope="col">Content</th>
                          
                          <th scope="col">Actives</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach( $allQuestions as $index => $question )
+                    @foreach( $allPolicies as $index => $policy )
                     
                          
                          <tr>
                               <th >{{ $index + 1 }}</th>
-                              <td>{{$question->question}}</td>
-                              <td>{{$question->answer}}</td>
+                              <td>{{$policy->title}}</td>
+                              <td>{{$policy->content}}</td>
                               
                               <td>
                                    
                                         
-                                   <form action="/Faqs/{{ $question->id }}" method="POST">
-                                        <a href="/Faqs/{{ $question->id }}/edit" type="button" style="color: white;" class="btn btn-info m-2">Edit</a>
+                                   <form action="/admin/Policies/{{ $policy->id }}" method="POST">
+                                        <a href="/admin/Policies/{{ $policy->id }}/edit" type="button" style="color: white;" class="btn btn-info m-2">Edit</a>
                                              
                                              @csrf
                                              @method('DELETE')

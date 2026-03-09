@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\dashboard\FaqsController;
-use App\Http\Controllers\dashboard\PoliciesController;
+
+
+use App\Http\Controllers\Web\Admin\FaqsController;
+use App\Http\Controllers\Web\Admin\PoliciesController;
 use App\Http\Controllers\Web\Admin\DoctorController;
 use App\Http\Controllers\Web\Admin\SpecialtyController;
 use App\Http\Controllers\Web\Doctor\ProfileController;
@@ -17,8 +19,7 @@ Route::get('/', function () {
 })->name('home');
 
 
-Route::resource('Faqs', FaqsController::class);
-Route::resource('Policies', PoliciesController::class);
+
 
 Route::post('/test-login', function (Request $request) {
     $request->validate([
@@ -55,6 +56,9 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
     Route::get('/specialties',[SpecialtyController::class,'index'])->name('specialties.index');
     Route::get('/specialties/create',[SpecialtyController::class,'create'])->name('specialties.create');
     Route::post('/specialties',[SpecialtyController::class,'store'])->name('specialties.store');
+
+    Route::resource('Faqs', FaqsController::class);
+    Route::resource('Policies', PoliciesController::class);
 
 
 });

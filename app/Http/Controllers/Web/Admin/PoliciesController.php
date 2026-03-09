@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Controllers\dashboard;
+namespace App\Http\Controllers\Web\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\dashboard\PoliciesRequest;
 use App\Models\PolicyModel;
@@ -16,7 +16,7 @@ class PoliciesController extends Controller
     {
         $allPolicies = PolicyModel::get();
         $submitMessage = "";
-        return view('Policies.index' , compact('allPolicies','submitMessage'));
+        return view('admin.Policies.index' , compact('allPolicies','submitMessage'));
     }
 
     /**
@@ -26,7 +26,7 @@ class PoliciesController extends Controller
     {
         $submitMessage = "";
         
-        return view('Policies.create' , compact('submitMessage'));
+        return view('admin.Policies.create' , compact('submitMessage'));
     }
 
     /**
@@ -45,10 +45,10 @@ class PoliciesController extends Controller
         $Policy = PolicyModel::create($dataPolicy);
         if($Policy){
             $submitMessage = "Created Policy Succefully";
-            return view('Policies.create' , compact('submitMessage'));
+            return view('admin.Policies.create' , compact('submitMessage'));
         }else {
             $submitMessage = "Created Policy Faild";
-            return view('Policies.create' , compact('submitMessage'));
+            return view('admin.Policies.create' , compact('submitMessage'));
         }
     }
 
@@ -68,7 +68,7 @@ class PoliciesController extends Controller
         $Policy= PolicyModel::findOrFail($id);
         
         $submitMessage = "";
-        return view('Policies.edit' , compact('Policy' , 'submitMessage' ));
+        return view('admin.Policies.edit' , compact('Policy' , 'submitMessage' ));
     }
 
     /**
@@ -90,10 +90,10 @@ class PoliciesController extends Controller
         if($update){
             $submitMessage = "Update Policy Succefully";
 
-            return view('Policies.edit' , compact('submitMessage' ,'Policy'));
+            return view('admin.Policies.edit' , compact('submitMessage' ,'Policy'));
         }else {
             $submitMessage = "Update Policy Faild";
-            return view('Policies.edit' , compact('submitMessage', 'Policy'));
+            return view('admin.Policies.edit' , compact('submitMessage', 'Policy'));
         }
     }
 
@@ -109,10 +109,10 @@ class PoliciesController extends Controller
         if($delete){
             $submitMessage = "Delete Policy Succefully";
 
-            return view('Policies.index' , compact('submitMessage' ,'allPolicies'));
+            return view('admin.Policies.index' , compact('submitMessage' ,'allPolicies'));
         }else {
             $submitMessage = "Delete Policy Faild";
-            return view('Policies.index' , compact('submitMessage', 'allPolicies'));
+            return view('admin.Policies.index' , compact('submitMessage', 'allPolicies'));
         }
     }
 }

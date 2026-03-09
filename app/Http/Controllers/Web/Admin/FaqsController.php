@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\dashboard;
+namespace App\Http\Controllers\Web\Admin;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\dashboard\FaqsRequest;
@@ -16,7 +16,7 @@ class FaqsController extends Controller
     {   
         $allQuestions = FaqModel::get();
         $submitMessage = "";
-        return view('Faqs.index' , compact('allQuestions','submitMessage'));
+        return view('admin.Faqs.index' , compact('allQuestions','submitMessage'));
     }
 
     /**
@@ -26,7 +26,7 @@ class FaqsController extends Controller
     {
         $submitMessage = "";
         
-        return view('Faqs.create' , compact('submitMessage'));
+        return view('admin.Faqs.create' , compact('submitMessage'));
     }
 
     /**
@@ -46,10 +46,10 @@ class FaqsController extends Controller
         $Faq = FaqModel::create($dataFaq);
         if($Faq){
             $submitMessage = "Created Question Succefully";
-            return view('Faqs.create' , compact('submitMessage'));
+            return view('admin.Faqs.create' , compact('submitMessage'));
         }else {
             $submitMessage = "Created Question Faild";
-            return view('Faqs.create' , compact('submitMessage'));
+            return view('admin.Faqs.create' , compact('submitMessage'));
         }
         
     }
@@ -71,7 +71,7 @@ class FaqsController extends Controller
         $Faq = FaqModel::findOrFail($id);
         
         $submitMessage = "";
-        return view('Faqs.edit' , compact('Faq' , 'submitMessage' ));
+        return view('admin.Faqs.edit' , compact('Faq' , 'submitMessage' ));
     }
 
     /**
@@ -93,10 +93,10 @@ class FaqsController extends Controller
         if($update){
             $submitMessage = "Update Question Succefully";
 
-            return view('Faqs.edit' , compact('submitMessage' ,'Faq'));
+            return view('admin.Faqs.edit' , compact('submitMessage' ,'Faq'));
         }else {
             $submitMessage = "Update Question Faild";
-            return view('Faqs.edit' , compact('submitMessage', 'Faq'));
+            return view('admin.Faqs.edit' , compact('submitMessage', 'Faq'));
         }
     }
 
@@ -112,10 +112,10 @@ class FaqsController extends Controller
         if($delete){
             $submitMessage = "Delete Question Succefully";
 
-            return view('Faqs.index' , compact('submitMessage' ,'allQuestions'));
+            return view('admin.Faqs.index' , compact('submitMessage' ,'allQuestions'));
         }else {
             $submitMessage = "Delete Question Faild";
-            return view('Faqs.index' , compact('submitMessage', 'allQuestions'));
+            return view('admin.Faqs.index' , compact('submitMessage', 'allQuestions'));
         }
     }
 }
