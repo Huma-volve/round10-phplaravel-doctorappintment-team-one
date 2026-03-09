@@ -24,8 +24,6 @@
             </p>
         </div>
 
-        <h4>Change Password</h4>
-
         @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -94,6 +92,29 @@
                 <button class="btn btn-success">Update Specialties</button>
             </form>
         </div>
+        <!-- Button to toggle profile edit form -->
+        <a href="#" onclick="toggleProfileForm()" class="btn btn-primary mb-3">
+            Edit Profile
+        </a>
+
+        <!-- Hidden form -->
+        <div id="profileForm" style="display:none; margin-top:15px;">
+            <form method="POST" action="{{ route('doctor.profile.update') }}">
+                @csrf
+
+                <div class="mb-3">
+                    <label>Bio</label>
+                    <textarea name="bio" class="form-control" rows="3">{{ $doctor->bio }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label>Years Of Experience</label>
+                    <input type="number" name="years_of_experience" class="form-control" value="{{ $doctor->years_of_experience }}">
+                </div>
+
+                <button class="btn btn-success">Update Profile</button>
+            </form>
+        </div>
     </div>
         <script>
             function togglePasswordForm() {
@@ -109,6 +130,14 @@
             function toggleSpecialtyForm() {
                 var form = document.getElementById("specialtyForm");
 
+                if (form.style.display === "none") {
+                    form.style.display = "block";
+                } else {
+                    form.style.display = "none";
+                }
+            }
+            function toggleProfileForm() {
+                var form = document.getElementById("profileForm");
                 if (form.style.display === "none") {
                     form.style.display = "block";
                 } else {

@@ -54,4 +54,23 @@ class ProfileController extends Controller
         return redirect()->route('doctor.profile')
             ->with('success', 'Specialties updated successfully');
     }
+
+
+    public function updateProfile(Request $request)
+    {
+        $doctor = auth()->user()->doctor;
+
+        $request->validate([
+            'bio' => 'required|string|min:10',
+            'years_of_experience' => 'required|integer|min:0',
+        ]);
+
+        $doctor->update([
+            'bio' => $request->bio,
+            'years_of_experience' => $request->years_of_experience,
+        ]);
+
+        return redirect()->route('doctor.profile')
+            ->with('success', 'Profile updated successfully');
+    }
 }

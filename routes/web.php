@@ -61,4 +61,7 @@ Route::middleware(['auth','role:doctor'])->prefix('doctor')->name('doctor.')->gr
 //    Route::get('/schedules',[ScheduleController::class,'index'])->name('schedules.index');
     Route::post('/profile/specialties', [ProfileController::class, 'updateSpecialties'])
         ->name('profile.update.specialties');
+
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])
+        ->name('profile.update');
 });
