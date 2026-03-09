@@ -35,18 +35,3 @@ Route::prefix('web/auth')->group(function () {
     Route::post('/logout', [AuthController::class,'logout'])->name('logout');
 });
 
-Route::middleware(['auth','role:admin'])->group(function () {
-
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
-
-});
-
-Route::middleware(['auth','role:doctor'])->group(function () {
-
-    Route::get('/doctor/dashboard', function () {
-        return view('doctor.dashboard');
-    })->name('doctor.dashboard');
-
-});
