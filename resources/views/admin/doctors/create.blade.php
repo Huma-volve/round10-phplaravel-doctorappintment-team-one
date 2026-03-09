@@ -55,6 +55,16 @@
                 <input type="number" name="years_of_experience" class="form-control">
             </div>
 
+            <div class="mb-3">
+                <label>Specialties</label>
+                <select name="specialties[]" class="form-control" multiple>
+                    @foreach($specialties as $specialty)
+                        <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
+                    @endforeach
+                </select>
+                <small class="text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple specialties</small>
+            </div>
+
             <button type="submit" class="btn btn-primary">
                 Create Doctor
             </button>

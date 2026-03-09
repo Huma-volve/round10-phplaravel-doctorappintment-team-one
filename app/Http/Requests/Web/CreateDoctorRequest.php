@@ -11,9 +11,13 @@ class CreateDoctorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check() && auth()->user()->role === 'admin';
     }
 
+    protected function failedAuthorization()
+    {
+        abort(403, 'Only admins can create doctors.');
+    }
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,6 +32,8 @@ class CreateDoctorRequest extends FormRequest
             'bio' => 'required|string|min:10',
             'years_of_experience' => 'required|integer|min:1',
             'license_number' => 'required|string|min:10|unique:doctors',
+            'specialties' => 'required|array|min:1',
+            'specialties.*' => 'exists:specialties,id',
         ];
     }
     public function messages(): array
