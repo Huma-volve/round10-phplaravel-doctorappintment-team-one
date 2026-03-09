@@ -28,6 +28,8 @@ class CreateDoctorRequest extends FormRequest
             'bio' => 'required|string|min:10',
             'years_of_experience' => 'required|integer|min:1',
             'license_number' => 'required|string|min:10|unique:doctors',
+            'specialties' => 'required|array|min:1',
+            'specialties.*' => 'exists:specialties,id',
         ];
     }
     public function messages(): array
