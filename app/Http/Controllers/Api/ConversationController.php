@@ -12,6 +12,56 @@ use Illuminate\Http\Request;
 
 class ConversationController extends Controller
 {
+    public function index(Request $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+
+        // جلب المحادثات بناءً على المريض أو الطبيب، مع ترتيبها حسب آخر رسالة
+        $conversations = Conversation::query()
+            ->where(function ($query) use ($userId) {
+                $query->where('patient_id', $userId)
+                    ->orWhere('doctor_id', $userId);
+            })
+            ->with(['patient:id,name', 'doctor:id,name'])  // تأكد من تحميل الاسم بجانب الـ ID
+            ->orderByDesc('last_message_at_utc')  // ترتيب المحادثات بناءً على تاريخ آخر رسالة
+            ->get()
+            ->map(function ($conversation) use ($userId) {
+                // تحديد المستخدم الآخر في المحادثة (المريض أو الطبيب)
+                $otherUser = $conversation->patient_id == $userId
+                    ? $conversation->doctor
+                    : $conversation->patient;
+
+                // جلب آخر رسالة في المحادثة
+                $lastMessage = Message::query()
+                    ->where('conversation_id', $conversation->id)
+                    ->latest('id')  // ترتيب الرسائل حسب تاريخ آخر رسالة
+                    ->first();
+
+                // عدد الرسائل الغير مقروءة
+                $unreadCount = Message::query()
+                    ->where('conversation_id', $conversation->id)
+                    ->whereNull('read_at_utc')
+                    ->where('sender_user_id', '<>', $userId)
+                    ->count();
+
+                // إرجاع البيانات المطلوبة للمحادثة
+                return [
+                    'id' => $conversation->id,
+                    'user_name' => $otherUser->name ?? 'Unknown', // إظهار الاسم
+                    'last_message' => $lastMessage->body ?? 'No messages',  // آخر رسالة في المحادثة
+                    'unread_count' => $unreadCount,  // عدد الرسائل الغير مقروءة
+                    'last_message_at' => $conversation->last_message_at_utc, // آخر وقت للرسالة
+                ];
+            });
+
+        // إذا كانت المحادثات فارغة، إرجاع رسالة
+        if ($conversations->isEmpty()) {
+            return response()->json(['message' => 'لا توجد محادثات حالياً.'], 404);
+        }
+
+        // إرجاع المحادثات مع ترتيبها
+        return response()->json($conversations);
+    }
 
     public function unreadCount(Request $request, int $conversationId): JsonResponse
     {
@@ -38,6 +88,7 @@ class ConversationController extends Controller
         if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
             return $this->forbiddenResponse();
         }
+        // تغيير حالة الرسائل الغير مقروءة إلى مقروءة
         Message::where('conversation_id', $conversationId)
             ->where('sender_user_id', '!=', $userId)
             ->whereNull('read_at_utc')

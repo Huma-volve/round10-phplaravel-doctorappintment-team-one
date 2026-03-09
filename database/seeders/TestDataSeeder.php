@@ -69,7 +69,7 @@ $slotId = DB::table('doctor_time_slots')->insertGetId([
     'created_at'    => now(),
     'updated_at'    => now(),
 ]);
-      
+
 
         // ✅ 5. Booking
         DB::table('bookings')->insert([

@@ -62,13 +62,14 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::put('/booking/{id}/update', [BookingController::class, 'update']);
 
     // Messaging
+    Route::get('conversations', [ConversationController::class, 'index']);
     Route::post('conversations/{conversation}/messages', [MessageController::class, 'store']);
     Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);
     Route::post('/conversations/{conversation}/read', [ConversationController::class, 'markAsRead']);
     Route::get('/conversations/{conversation}/unread', [ConversationController::class, 'unreadCount']);
     Route::post('conversations/{conversation}/messages/media', [MessageController::class, 'sendMediaMessage']);
-    Route::post('/conversations/{conversation_id}/favorite', [ConversationController::class, 'toggleFavorite']);
-    Route::post('/conversations/{conversation_id}/archive', [ConversationController::class, 'archiveConversation']);
+    Route::post('/conversations/{conversation}/favorite', [ConversationController::class, 'toggleFavorite']);
+    Route::post('/conversations/{conversation}/archive', [ConversationController::class, 'archiveConversation']);
     // Search history
     Route::get('/search-history', [SearchController::class, 'index']);
     Route::post('/search', [SearchController::class, 'search_for_doctor']);
