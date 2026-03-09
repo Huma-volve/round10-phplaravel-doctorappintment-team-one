@@ -4,10 +4,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use App\Http\Controllers\Web\Auth\AuthController;
 
 Route::get('/', function () {
     return view('master');
-});
+})->name('home');
 
 Route::post('/test-login', function (Request $request) {
     $request->validate([
@@ -26,3 +27,26 @@ Route::post('/test-login', function (Request $request) {
         'user' => $request->user(),
     ]);
 })->withoutMiddleware([VerifyCsrfToken::class]);
+
+
+Route::prefix('web/auth')->group(function () {
+    Route::get('/login', [AuthController::class,'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class,'login']);
+    Route::post('/logout', [AuthController::class,'logout'])->name('logout');
+});
+
+Route::middleware(['auth','role:admin'])->group(function () {
+
+    Route::get('/admin/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+
+});
+
+Route::middleware(['auth','role:doctor'])->group(function () {
+
+    Route::get('/doctor/dashboard', function () {
+        return view('doctor.dashboard');
+    })->name('doctor.dashboard');
+
+});
