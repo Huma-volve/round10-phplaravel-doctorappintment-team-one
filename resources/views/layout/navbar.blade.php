@@ -49,27 +49,34 @@
           </div>
      </div>
      <div class="nav-item dropdown">
-          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+          <a href="#" class="nav-link dropdown-toggle" id="notificationDropdown" data-bs-toggle="dropdown">
                <i class="fa fa-bell me-lg-2"></i>
                <span class="d-none d-lg-inline-flex">Notificatin</span>
+               @if($unreadCount > 0)
+                    <span class="badge bg-danger ms-2">{{ $unreadCount }}</span>
+               @endif
           </a>
-          <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-               {{-- <a href="#" class="dropdown-item">
-                    <h6 class="fw-normal mb-0">Profile updated</h6>
-                    <small>15 minutes ago</small>
-               </a>
-               <hr class="dropdown-divider">
-               <a href="#" class="dropdown-item">
-                    <h6 class="fw-normal mb-0">New user added</h6>
-                    <small>15 minutes ago</small>
-               </a>
-               <hr class="dropdown-divider">
-               <a href="#" class="dropdown-item">
-                    <h6 class="fw-normal mb-0">Password changed</h6>
-                    <small>15 minutes ago</small>
-               </a> --}}
-               <hr class="dropdown-divider">
-               <a href="#" class="dropdown-item text-center">See all notifications</a>
+          <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0" style="width: 400px; max-height: 400px; overflow-y: auto;">
+            
+               @forelse($notifications ?? [] as $notification)
+
+              
+                    <a href="" class="dropdown-item {{ is_null($notification->read_at_utc) ? 'bg-light' : '' }}">
+                         <h6 class="fw-normal mb-0">{{ $notification->title ?? $notification->type }}</h6>
+                         <small>{{ $notification->message ?? '' }}</small>
+                         <div class="mt-1">
+                              <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                         </div>
+                    </a>
+                    <hr class="dropdown-divider">
+               @empty
+               
+                    <a href="#" class="dropdown-item text-center text-muted">
+                         <small>No notifications</small>
+                    </a>
+                    <hr class="dropdown-divider">
+               @endforelse
+               <a href="{{ route('notifications.index') }}" class="dropdown-item text-center">See all notifications</a>
           </div>
      </div>
      <div class="nav-item dropdown">

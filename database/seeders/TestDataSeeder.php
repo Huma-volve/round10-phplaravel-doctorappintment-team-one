@@ -10,6 +10,20 @@ class TestDataSeeder extends Seeder
 {
     public function run()
     {
+        // ✅ 0. Admin User
+        $adminUserId = DB::table('users')->insertGetId([
+            'name'       => 'Admin User',
+            'email'      => 'admin@test.com',
+            'phone'      => '01000000000',
+            'password'   => Hash::make('password123'),
+            'role'       => 'admin',
+            'status'     => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+  
+     
         // ✅ 1. Patient User
         $patientUserId = DB::table('users')->insertGetId([
             'name'       => 'Test Patient',
