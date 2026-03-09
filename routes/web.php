@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\Admin\DoctorController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,3 +36,11 @@ Route::prefix('web/auth')->group(function () {
     Route::post('/logout', [AuthController::class,'logout'])->name('logout');
 });
 
+
+Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group(function(){
+
+    Route::get('/doctors/create',[DoctorController::class,'create'])->name('doctors.create');
+
+    Route::post('/doctors',[DoctorController::class,'store'])->name('doctors.store');
+
+});
