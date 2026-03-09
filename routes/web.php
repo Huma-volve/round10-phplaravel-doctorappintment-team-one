@@ -64,4 +64,7 @@ Route::middleware(['auth','role:doctor'])->prefix('doctor')->name('doctor.')->gr
 
     Route::post('/profile/update', [ProfileController::class, 'updateProfile'])
         ->name('profile.update');
+
+    Route::post('/profile/clinics', [ProfileController::class, 'addClinic'])
+        ->name('profile.add.clinic');
 });

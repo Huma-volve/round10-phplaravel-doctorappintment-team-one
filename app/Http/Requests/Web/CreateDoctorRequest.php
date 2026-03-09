@@ -11,9 +11,13 @@ class CreateDoctorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check() && auth()->user()->role === 'admin';
     }
 
+    protected function failedAuthorization()
+    {
+        abort(403, 'Only admins can create doctors.');
+    }
     /**
      * Get the validation rules that apply to the request.
      *
