@@ -16,6 +16,8 @@
           </div>
           <div class="navbar-nav w-100">
           <a href="index.html" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+          
+          <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
           <div class="nav-item dropdown">
                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-users"></i></i>Users</a>
                <div class="dropdown-menu bg-transparent border-0">
@@ -38,8 +40,16 @@
           </div>
           <div class="navbar-nav w-100">
               @if(auth()->check() && auth()->user()->role === 'admin')
-                <a  href="{{ route('admin.doctors.create') }}" class="nav-item nav-link "><i class="fa fa-tachometer-alt me-2"></i>Add Doctor</a>
-                <a class="nav-link" href="{{ route('admin.specialties.index') }}">Specialties</a>
+                    <a  href="{{ route('admin.doctors.create') }}" class="nav-item nav-link "><i class="fa fa-tachometer-alt me-2"></i>Add Doctor</a>
+                    <a class="nav-link" href="{{ route('admin.specialties.index') }}">Specialties</a>
+                    <div class="nav-item dropdown">
+                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>FAQS and Policies</a>
+                         <div class="dropdown-menu bg-transparent border-0">
+                              <a href="/admin/Faqs" class="dropdown-item">FAQS</a>
+                              <a href="/admin/Policies" class="dropdown-item">Policies</a>
+                              
+                         </div>
+                    </div>
               @endif
           </div>
           </div>

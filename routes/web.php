@@ -1,5 +1,9 @@
 <?php
 
+
+
+use App\Http\Controllers\Web\Admin\FaqsController;
+use App\Http\Controllers\Web\Admin\PoliciesController;
 use App\Http\Controllers\Api\Bookingcontroller;
 use App\Http\Controllers\BookingtableController;
 use App\Http\Controllers\manage_userController;
@@ -73,6 +77,9 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
     Route::get('/specialties',[SpecialtyController::class,'index'])->name('specialties.index');
     Route::get('/specialties/create',[SpecialtyController::class,'create'])->name('specialties.create');
     Route::post('/specialties',[SpecialtyController::class,'store'])->name('specialties.store');
+
+    Route::resource('Faqs', FaqsController::class);
+    Route::resource('Policies', PoliciesController::class);
 
 
 });
