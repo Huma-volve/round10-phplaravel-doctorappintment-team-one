@@ -51,6 +51,8 @@ class Bookingcontroller extends Controller
         $slots->status = 'booked';
 
         $slots->save();
+        
+        // Notify doctor
         app(NotificationService::class)->notify(
             $slots->doctor->user_id,
             'booking',
@@ -64,6 +66,19 @@ class Bookingcontroller extends Controller
             ]
         );
         
+        // Notify admin
+        app(NotificationService::class)->notifyAdmin(
+            'booking',
+            'in_app',
+            'New Booking Created',
+            'A new booking has been created in the system.',
+            [
+                'booking_id' => $booking->id,
+                'patient_id' => $booking->patient_id,
+                'doctor_id' => $booking->doctor_id,
+                'time_slot_id' => $slots->id,
+            ]
+        );
 
         return response()->json([
             'message' => 'Appointment booked successfully',
@@ -118,6 +133,7 @@ class Bookingcontroller extends Controller
         // Load relationships for response
         $booking->load(['patient', 'doctor', 'doctor.user', 'timeSlot', 'review']);
         
+        // Notify doctor
         app(NotificationService::class)->notify(
             $booking->doctor->user_id,
             'cancellation',
@@ -127,6 +143,20 @@ class Bookingcontroller extends Controller
             [
                 'booking_id' => $booking->id,
                 'patient_id' => $booking->patient_id,
+                'time_slot_id' => $slot->id,
+            ]
+        );
+        
+        // Notify admin
+        app(NotificationService::class)->notifyAdmin(
+            'cancellation',
+            'in_app',
+            'Booking Cancelled',
+            'A booking has been cancelled by the patient.',
+            [
+                'booking_id' => $booking->id,
+                'patient_id' => $booking->patient_id,
+                'doctor_id' => $booking->doctor_id,
                 'time_slot_id' => $slot->id,
             ]
         );
@@ -190,6 +220,7 @@ class Bookingcontroller extends Controller
         // Load relationships for response
         $oldBooking->load(['patient', 'doctor', 'doctor.user', 'timeSlot', 'review']);
         
+        // Notify doctor
         app(NotificationService::class)->notify(
             $oldBooking->doctor->user_id,
             'booking',
@@ -199,6 +230,20 @@ class Bookingcontroller extends Controller
             [
                 'booking_id' => $oldBooking->id,
                 'patient_id' => $oldBooking->patient_id,
+                'time_slot_id' => $newSlot->id,
+            ]
+        );
+        
+        // Notify admin
+        app(NotificationService::class)->notifyAdmin(
+            'booking',
+            'in_app',
+            'Booking Rescheduled',
+            'A booking has been rescheduled by the patient.',
+            [
+                'booking_id' => $oldBooking->id,
+                'patient_id' => $oldBooking->patient_id,
+                'doctor_id' => $oldBooking->doctor_id,
                 'time_slot_id' => $newSlot->id,
             ]
         );
