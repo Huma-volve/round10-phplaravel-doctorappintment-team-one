@@ -8,6 +8,7 @@ use App\Http\Requests\Api\MediaMessageStoreRequest;
 use App\Http\Requests\Api\MessageStoreRequest;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +62,22 @@ class MessageController extends Controller
             return $message;
         });
 
+        // Notify the recipient
+        $conversation = Conversation::find($conversationId);
+        $recipientId = $userId === $conversation->patient_id ? $conversation->doctor_id : $conversation->patient_id;
+        
+        app(NotificationService::class)->notify(
+            $recipientId,
+            'chat',
+            'in_app',
+            'New Message',
+            'You have a new message from your ' . ($userId === $conversation->patient_id ? 'doctor' : 'patient'),
+            [
+                'conversation_id' => $conversationId,
+                'message_id' => $message->id,
+            ]
+        );
+
         broadcast(new MessageSent($message))->toOthers();
 
         return response()->json($message, 201);
@@ -108,6 +125,22 @@ class MessageController extends Controller
 
                 return $message;
             });
+
+            // Notify the recipient
+            $conversation = Conversation::find($conversationId);
+            $recipientId = $userId === $conversation->patient_id ? $conversation->doctor_id : $conversation->patient_id;
+            
+            app(NotificationService::class)->notify(
+                $recipientId,
+                'chat',
+                'in_app',
+                'New Message',
+                'You have a new message from your ' . ($userId === $conversation->patient_id ? 'doctor' : 'patient'),
+                [
+                    'conversation_id' => $conversationId,
+                    'message_id' => $message->id,
+                ]
+            );
 
             broadcast(new MessageSent($message))->toOthers();
 

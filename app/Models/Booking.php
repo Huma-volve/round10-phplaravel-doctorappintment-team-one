@@ -43,4 +43,8 @@ class Booking extends Model
     {
         return $this->hasOne(MedicalRecord::class, 'appointment_id');
     }
+    public function clinic()
+{
+    return $this->belongsTo(Clinic::class,'clinic_id');
+}
 }

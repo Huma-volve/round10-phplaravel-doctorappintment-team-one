@@ -77,6 +77,18 @@ $booking = Booking::findOrFail($payment->booking_id);
                 ['booking_id' => $booking->id,
                  'payment_id' => $payment->id]
             );
+            
+            // Notify admin of successful payment
+            app(NotificationService::class)->notifyAdmin(
+                'payment',
+                'in_app',
+                'Payment Received',
+                'A payment has been successfully processed.',
+                ['booking_id' => $booking->id,
+                 'payment_id' => $payment->id,
+                 'amount' => $payment->amount_cents,
+                 'currency' => $payment->currency]
+            );
          }
     }
         return response()->json(['message' => 'Webhook received.'], 200);
