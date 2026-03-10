@@ -80,13 +80,13 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 Route::prefix('v1')->name('v1.')->group(function () {
 
     // Doctors
-    Route::middleware('api:sanctum')->prefix('/doctors')->name('doctors.')->group(function () {
+    Route::middleware('auth:sanctum')->prefix('/doctors')->name('doctors.')->group(function () {
         Route::get('/nearby', [DoctorController::class, 'getNearbyDoctors'])->name('nearby');
         Route::get('/{doctor}', [DoctorController::class, 'getDoctor'])->name('show');
     });
 
     // User favorites
-    Route::middleware('api:sanctum')->prefix('/user/favorites')->name('user.favorites.')->group(function () {
+    Route::middleware('auth:sanctum')->prefix('/user/favorites')->name('user.favorites.')->group(function () {
         Route::prefix('/doctors')->name('doctors.')->group(function () {
             Route::get('/', [FavoriteController::class, 'listFavorites'])->name('list');
             Route::post('/add', [FavoriteController::class, 'addToFavorite'])->name('add');
