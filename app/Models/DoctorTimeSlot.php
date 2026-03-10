@@ -9,7 +9,7 @@ class DoctorTimeSlot extends Model
 {
 
     use HasFactory;
-    
+
     public $table = 'doctor_time_slots';
 
     protected $guarded = [];
@@ -26,6 +26,6 @@ class DoctorTimeSlot extends Model
 
     public function bookings()
     {
-        return $this->hasMany(Booking::class, 'time_slot_id');
+        return $this->hasOne(Booking::class, 'time_slot_id');
     }
 }
