@@ -95,8 +95,7 @@ Route::prefix('v1')->name('v1.')->group(function () {
     });
 
     // Reviews
-    Route::get('reviews/getAll', [ReviewsController::class, 'getReview']);
-    Route::apiResource('reviews', ReviewsController::class);
+    Route::middleware('auth:sanctum')->apiResource('reviews', ReviewsController::class);
 
     // Doctor bookings public
     Route::get('doctorBookings', [BookingController::class, 'doctorBookings']);
