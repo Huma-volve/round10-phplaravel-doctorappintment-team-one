@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     // Route::patch('/notification-preferences', [NotificationController::class, 'updatePreference']);
 
     // Bookings
+    Route::get('/doctors/{id}/slots', [BookingController::class, 'availableSlots']);
     Route::post('/appointments/book', [BookingController::class, 'bookslot']);
     Route::get('/appointments/my', [BookingController::class, 'myBookings']);
     Route::delete('/mybooking/{id}/cancel', [BookingController::class, 'cancel']);

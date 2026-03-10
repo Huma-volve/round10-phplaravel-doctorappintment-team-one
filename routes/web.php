@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\Admin\FaqsController;
 use App\Http\Controllers\Web\Admin\PoliciesController;
 use App\Http\Controllers\Api\Bookingcontroller;
 use App\Http\Controllers\BookingtableController;
+use App\Http\Controllers\DoctorPanel\DoctorPanelController;
 use App\Http\Controllers\manage_userController;
 use App\Http\Controllers\paymentController;
 use App\Http\Controllers\Web\Admin\DoctorController;
@@ -27,24 +28,51 @@ Route::get('/', function () {
 })->name('home');
 
 
+///////////////////       doctor panal /////////////////
+Route::middleware(['auth', 'role:doctor'])->group(function() {
+    Route::get('doctorpanal', [DoctorPanelController::class, 'index'])->name('doctorpanal');
+    Route::get('doctorpanel/cancel/{booking}', [DoctorPanelController::class, 'cancelBooking'])->name('doctor.cancel');
+    Route::get('doctorpanel/edit/{booking}', [DoctorPanelController::class, 'editBooking'])->name('doctor.edit');
+    Route::put('doctorpanel/update/{booking}', [DoctorPanelController::class, 'updateBooking'])->name('doctorpanel.updateBooking');
+    Route::get('doctorpanel/payment/{id}', [DoctorPanelController::class, 'payment'])->name('doctor.payment');
+});
+
+
+
+
+
+
+
+
+
+
+
 
 /////////////// admin show users/////////////
+Route::middleware(['auth','role:admin'])->group(function(){
 
-Route::get('showpatient',[manage_userController::class,'index'])->name('showpatient');
-Route::delete('deletepatient/{id}',[manage_userController::class,'delete'])->name('deletepatient');
-Route::put('editstatus/{id}',[manage_userController::class,'edit'])->name('editstatus');
-Route::get('showdoctor',[manage_userController::class,'showdoctor'])->name('showdoctor');
-Route::delete('deletedoctor/{id}',[manage_userController::class,'deletedoctor'])->name('deletedoctor');
-Route::put('editstatusdoctor/{id}',[manage_userController::class,'editdoctor'])->name('editstatusdoctor');
+    Route::get('showpatient',[manage_userController::class,'index'])->name('showpatient');
+    Route::delete('deletepatient/{id}',[manage_userController::class,'delete'])->name('deletepatient');
+    Route::put('editstatus/{id}',[manage_userController::class,'edit'])->name('editstatus');
+    Route::get('showdoctor',[manage_userController::class,'showdoctor'])->name('showdoctor');
+    Route::delete('deletedoctor/{id}',[manage_userController::class,'deletedoctor'])->name('deletedoctor');
+    Route::put('editstatusdoctor/{id}',[manage_userController::class,'editdoctor'])->name('editstatusdoctor');
+    
+    ////////////////// Booking table //////////////////////////////////////////
+    Route::get('bookingtable',[BookingtableController::class,'index'])->name('bookingtable');
+    
+    Route::delete('deleteBooking/{id}',[BookingtableController::class,'deleteBooking'])->name('deleteBooking');
+    
+    ////////////////////// payment table//////////////////////////
+    Route::get('paymenttable',[paymentController::class,'index'])->name('paymenttable');
+    Route::get('showPayment/{id}',[paymentController::class,'showPayment'])->name('showPayment');
+    });
 
-////////////////// Booking table //////////////////////////////////////////
-Route::get('bookingtable',[BookingtableController::class,'index'])->name('bookingtable');
 
-Route::delete('deleteBooking/{id}',[BookingtableController::class,'deleteBooking'])->name('deleteBooking');
 
-////////////////////// payment table//////////////////////////
-Route::get('paymenttable',[paymentController::class,'index'])->name('paymenttable');
-Route::get('showPayment/{id}',[paymentController::class,'showPayment'])->name('showPayment');
+
+
+
 
 Route::post('/test-login', function (Request $request) {
     $request->validate([
