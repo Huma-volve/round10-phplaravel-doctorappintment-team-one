@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use App\Http\Controllers\Web\Auth\AuthController;
+use App\Http\Controllers\Web\Doctor\EarningsController;
+use App\Http\Controllers\Web\Doctor\PatientController;
+use App\Http\Controllers\Web\Doctor\SettingController;
 
 Route::get('/', function () {
     return view('master');
@@ -64,4 +67,27 @@ Route::middleware(['auth','role:doctor'])->prefix('doctor')->name('doctor.')->gr
 
     Route::post('/profile/update', [ProfileController::class, 'updateProfile'])
         ->name('profile.update');
+
+    Route::prefix('/patients')->name('patients.')->group(function(){
+        Route::get('/',[PatientController::class, 'index'])->name('index');
+        Route::get('/{patient}',[PatientController::class, 'show'])->name('show');
+        Route::get('/{patient}/edit',[PatientController::class, 'edit'])->name('edit');
+        Route::post('/{patient}/update',[PatientController::class, 'update'])->name('update');
+        Route::get('/{patient}/delete',[PatientController::class, 'destroy'])->name('delete');
+    });
+
+    Route::prefix('/earnings')->name('earnings.')->group(function(){
+        Route::get('/',[EarningsController::class, 'index'])->name('index');
+    });
+
+    Route::prefix('/settings')->name('settings.')->group(function(){
+        Route::get('/',[SettingController::class, 'index'])->name('index');
+        Route::post('/update',[SettingController::class, 'update'])->name('update');
+    });
+
+    Route::prefix('/clinics')->name('clinics.')->group(function(){
+        Route::post('/create',[SettingController::class, 'create'])->name('create');
+        Route::post('/edit',[SettingController::class, 'edit'])->name('edit');
+        Route::delete('/delete',[SettingController::class, 'delete'])->name('delete');
+    });
 });
