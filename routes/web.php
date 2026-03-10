@@ -66,6 +66,11 @@ Route::post('/test-login', function (Request $request) {
 
 // Admin Routes
 
+Route::get('/chat', function () {
+    return view('chat', [
+        'currentUserId' => auth()->id()
+    ]);
+})->name('chat')->middleware('auth');
 Route::prefix('web/auth')->group(function () {
     Route::get('/login', [AuthController::class,'showLogin'])->name('login');
     Route::post('/login', [AuthController::class,'login']);

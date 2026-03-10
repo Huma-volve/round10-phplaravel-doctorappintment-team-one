@@ -8,7 +8,6 @@ use App\Http\Requests\Api\MediaMessageStoreRequest;
 use App\Http\Requests\Api\MessageStoreRequest;
 use App\Models\Conversation;
 use App\Models\Message;
-use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,32 +19,36 @@ class MessageController extends Controller
     {
         $userId = $request->user()->id;
 
+        // Ensure user is part of the conversation
         if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
             return $this->forbiddenResponse();
         }
 
         $messages = Message::query()
             ->where('conversation_id', $conversationId)
-            ->orderBy('id', 'asc')
+            ->orderBy('sent_at_utc', 'desc')
             ->paginate(20);
 
         return response()->json($messages);
     }
 
-    public function store(MessageStoreRequest $request): JsonResponse
+    public function store(MessageStoreRequest $request, int $conversation): JsonResponse
     {
-        $conversationId = $request->route('conversation');
-        $userId = $request->user()->id;
+        $user = $request->user();
 
-        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
-            return $this->forbiddenResponse();
+        // Get conversation
+        $conversationModel = Conversation::findOrFail($conversation);
+
+        // Verify user belongs to conversation
+        if ($conversationModel->patient_id !== $user->id && $conversationModel->doctor_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $message = DB::transaction(function () use ($request, $conversationId, $userId) {
+        $message = DB::transaction(function () use ($request, $conversationModel, $user) {
 
             $message = Message::create([
-                'conversation_id'  => $conversationId,
-                'sender_user_id'   => $userId,
+                'conversation_id'  => $conversationModel->id,
+                'sender_user_id'   => $user->id,
                 'type'             => 'text',
                 'body'             => $request->string('body')->toString(),
                 'media_url'        => null,
@@ -55,28 +58,12 @@ class MessageController extends Controller
             ]);
 
             $this->updateConversationLastMessageAt(
-                $conversationId,
+                $conversationModel->id,
                 $message->sent_at_utc
             );
 
             return $message;
         });
-
-        // Notify the recipient
-        $conversation = Conversation::find($conversationId);
-        $recipientId = $userId === $conversation->patient_id ? $conversation->doctor_id : $conversation->patient_id;
-        
-        app(NotificationService::class)->notify(
-            $recipientId,
-            'chat',
-            'in_app',
-            'New Message',
-            'You have a new message from your ' . ($userId === $conversation->patient_id ? 'doctor' : 'patient'),
-            [
-                'conversation_id' => $conversationId,
-                'message_id' => $message->id,
-            ]
-        );
 
         broadcast(new MessageSent($message))->toOthers();
 
@@ -85,11 +72,18 @@ class MessageController extends Controller
 
     public function sendMediaMessage(MediaMessageStoreRequest $request): JsonResponse
     {
-        $conversationId = $request->route('conversation');
-        $userId = $request->user()->id;
+        $patientId = $request->user()->id;
+        $doctorId  = $request->doctor_id;
 
-        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
-            return $this->forbiddenResponse();
+        $conversation = Conversation::where([
+            'patient_id' => $patientId,
+            'doctor_id' => $doctorId
+        ])->first();
+
+        if (!$conversation) {
+            return response()->json([
+                'message' => 'Unauthorized, conversation does not exist or you do not have permission to send messages.'
+            ], 403);
         }
 
         $file = $request->file('media');
@@ -97,61 +91,50 @@ class MessageController extends Controller
         $mime = $file->getMimeType();
         $size = $file->getSize();
 
-        $type = str_starts_with($mime, 'video/')
-            ? 'video'
-            : 'image';
+        $type = str_starts_with($mime, 'video/') ? 'video' : 'image';
 
         $path = $file->store('chat', 'public');
 
-        try {
+        $message = DB::transaction(function () use ($conversation, $patientId, $path, $mime, $size, $type) {
 
-            $message = DB::transaction(function () use ($conversationId, $userId, $path, $mime, $size, $type) {
+            $message = Message::create([
+                'conversation_id'  => $conversation->id,
+                'sender_user_id'   => $patientId,
+                'type'             => $type,
+                'body'             => null,
+                'media_url'        => Storage::disk('public')->url($path),
+                'media_size_bytes' => $size,
+                'media_mime'       => $mime,
+                'sent_at_utc'      => now(),
+            ]);
 
-                $message = Message::create([
-                    'conversation_id'  => $conversationId,
-                    'sender_user_id'   => $userId,
-                    'type'             => $type,
-                    'body'             => null,
-                    'media_url'        => Storage::disk('public')->url($path),
-                    'media_size_bytes' => $size,
-                    'media_mime'       => $mime,
-                    'sent_at_utc'      => now(),
-                ]);
-
-                $this->updateConversationLastMessageAt(
-                    $conversationId,
-                    $message->sent_at_utc
-                );
-
-                return $message;
-            });
-
-            // Notify the recipient
-            $conversation = Conversation::find($conversationId);
-            $recipientId = $userId === $conversation->patient_id ? $conversation->doctor_id : $conversation->patient_id;
-            
-            app(NotificationService::class)->notify(
-                $recipientId,
-                'chat',
-                'in_app',
-                'New Message',
-                'You have a new message from your ' . ($userId === $conversation->patient_id ? 'doctor' : 'patient'),
-                [
-                    'conversation_id' => $conversationId,
-                    'message_id' => $message->id,
-                ]
+            $this->updateConversationLastMessageAt(
+                $conversation->id,
+                $message->sent_at_utc
             );
 
-            broadcast(new MessageSent($message))->toOthers();
+            return $message;
+        });
 
-            return response()->json($message, 201);
+        broadcast(new MessageSent($message))->toOthers();
 
-        } catch (\Throwable $e) {
+        return response()->json($message, 201);
+    }
 
-            Storage::disk('public')->delete($path);
+    public function fetchMessages(Request $request, int $conversationId)
+    {
+        $userId = $request->user()->id;
 
-            throw $e;
+        if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
+            return $this->forbiddenResponse();
         }
+
+        $messages = Message::query()
+            ->where('conversation_id', $conversationId)
+            ->orderBy('sent_at_utc', 'asc')
+            ->paginate(20);
+
+        return response()->json($messages);
     }
 
     private function updateConversationLastMessageAt(int $conversationId, $sentAt): void
@@ -168,10 +151,8 @@ class MessageController extends Controller
         return Conversation::query()
             ->whereKey($conversationId)
             ->where(function ($query) use ($userId) {
-
                 $query->where('patient_id', $userId)
-                      ->orWhere('doctor_id', $userId);
-
+                    ->orWhere('doctor_id', $userId);
             })
             ->exists();
     }
