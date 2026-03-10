@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Web\Doctor;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Doctor\UpdatePatientRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class PatientController extends Controller
 {
@@ -31,5 +33,23 @@ class PatientController extends Controller
 
     public function edit(User $patient){
         return view('doctor.patients.edit', compact('patient'));
+    }
+
+    public function update(UpdatePatientRequest $request, User $patient){
+        $data = $request->validated();
+
+        if($data['photo_url'] instanceof UploadedFile){
+            $data['photo_url'] = $data['photo_url']->store('patients', 'public');
+        }
+    
+        $patient->update($data);
+
+        return redirect()->route('doctor.patients.index')->with('success', 'Patient updated successfully');
+    }
+
+    public function destroy(User $patient){
+        $patient->delete();
+
+        return redirect()->route('doctor.patients.index')->with('success', 'Patient deleted successfully');
     }
 }
