@@ -7,61 +7,61 @@ use App\Models\Conversation;
 use App\Models\ConversationArchive;
 use App\Models\ConversationFavorite;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ConversationController extends Controller
 {
+
+
     public function index(Request $request): JsonResponse
     {
         $userId = $request->user()->id;
 
-        // جلب المحادثات بناءً على المريض أو الطبيب، مع ترتيبها حسب آخر رسالة
         $conversations = Conversation::query()
             ->where(function ($query) use ($userId) {
                 $query->where('patient_id', $userId)
                     ->orWhere('doctor_id', $userId);
             })
-            ->with(['patient:id,name', 'doctor:id,name'])  // تأكد من تحميل الاسم بجانب الـ ID
-            ->orderByDesc('last_message_at_utc')  // ترتيب المحادثات بناءً على تاريخ آخر رسالة
+            ->with(['patient:id,name', 'doctor:id,name'])
+            ->orderByDesc('last_message_at_utc')
             ->get()
             ->map(function ($conversation) use ($userId) {
-                // تحديد المستخدم الآخر في المحادثة (المريض أو الطبيب)
+
                 $otherUser = $conversation->patient_id == $userId
                     ? $conversation->doctor
                     : $conversation->patient;
 
-                // جلب آخر رسالة في المحادثة
                 $lastMessage = Message::query()
                     ->where('conversation_id', $conversation->id)
-                    ->latest('id')  // ترتيب الرسائل حسب تاريخ آخر رسالة
+                    ->latest('id')
                     ->first();
 
-                // عدد الرسائل الغير مقروءة
                 $unreadCount = Message::query()
                     ->where('conversation_id', $conversation->id)
                     ->whereNull('read_at_utc')
                     ->where('sender_user_id', '<>', $userId)
                     ->count();
 
-                // إرجاع البيانات المطلوبة للمحادثة
                 return [
                     'id' => $conversation->id,
-                    'user_name' => $otherUser->name ?? 'Unknown', // إظهار الاسم
-                    'last_message' => $lastMessage->body ?? 'No messages',  // آخر رسالة في المحادثة
-                    'unread_count' => $unreadCount,  // عدد الرسائل الغير مقروءة
-                    'last_message_at' => $conversation->last_message_at_utc, // آخر وقت للرسالة
+                    'user_name' => $otherUser->name ?? 'Unknown',
+                    'last_message' => $lastMessage->body ?? 'No messages',
+                    'unread_count' => $unreadCount,
+                    'last_message_at' => $conversation->last_message_at_utc,
                 ];
             });
 
-        // إذا كانت المحادثات فارغة، إرجاع رسالة
         if ($conversations->isEmpty()) {
-            return response()->json(['message' => 'لا توجد محادثات حالياً.'], 404);
+            return response()->json([
+                'message' => 'لا توجد محادثات حالياً.'
+            ], 404);
         }
 
-        // إرجاع المحادثات مع ترتيبها
         return response()->json($conversations);
     }
+
 
     public function unreadCount(Request $request, int $conversationId): JsonResponse
     {
@@ -70,6 +70,7 @@ class ConversationController extends Controller
         if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
             return $this->forbiddenResponse();
         }
+
         $unreadCount = Message::query()
             ->where('conversation_id', $conversationId)
             ->whereNull('read_at_utc')
@@ -81,6 +82,28 @@ class ConversationController extends Controller
         ]);
     }
 
+
+    public function createConversation(Request $request): JsonResponse
+    {
+        $patient = User::find($request->patient_id);
+        $doctor = User::find($request->doctor_id);
+
+        if (!$patient || !$doctor) {
+            return response()->json([
+                'message' => 'مريض أو طبيب غير موجود'
+            ], 404);
+        }
+
+        $conversation = Conversation::create([
+            'patient_id' => $patient->id,
+            'doctor_id' => $doctor->id,
+            'last_message_at_utc' => now(),
+        ]);
+
+        return response()->json($conversation, 201);
+    }
+
+
     public function markAsRead(Request $request, int $conversationId): JsonResponse
     {
         $userId = $request->user()->id;
@@ -88,7 +111,7 @@ class ConversationController extends Controller
         if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
             return $this->forbiddenResponse();
         }
-        // تغيير حالة الرسائل الغير مقروءة إلى مقروءة
+
         Message::where('conversation_id', $conversationId)
             ->where('sender_user_id', '!=', $userId)
             ->whereNull('read_at_utc')
@@ -101,6 +124,7 @@ class ConversationController extends Controller
         ]);
     }
 
+
     public function toggleFavorite(Request $request, int $conversationId): JsonResponse
     {
         $userId = $request->user()->id;
@@ -108,6 +132,7 @@ class ConversationController extends Controller
         if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
             return $this->forbiddenResponse();
         }
+
         $favorite = ConversationFavorite::where('user_id', $userId)
             ->where('conversation_id', $conversationId)
             ->first();
@@ -131,6 +156,7 @@ class ConversationController extends Controller
         ], 201);
     }
 
+
     public function archiveConversation(Request $request, int $conversationId): JsonResponse
     {
         $userId = $request->user()->id;
@@ -138,6 +164,7 @@ class ConversationController extends Controller
         if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
             return $this->forbiddenResponse();
         }
+
         $archive = ConversationArchive::where('user_id', $userId)
             ->where('conversation_id', $conversationId)
             ->first();
@@ -161,6 +188,7 @@ class ConversationController extends Controller
         ], 201);
     }
 
+
     private function ensureUserBelongsToConversation(int $userId, int $conversationId): bool
     {
         return Conversation::query()
@@ -171,6 +199,7 @@ class ConversationController extends Controller
             })
             ->exists();
     }
+
 
     private function forbiddenResponse()
     {

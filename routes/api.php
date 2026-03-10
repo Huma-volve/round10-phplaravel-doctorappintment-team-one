@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 
     // Messaging
     Route::get('conversations', [ConversationController::class, 'index']);
+    Route::post('conversations/create', [ConversationController::class, 'createConversation']);
     Route::post('conversations/{conversation}/messages', [MessageController::class, 'store']);
     Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);
     Route::post('/conversations/{conversation}/read', [ConversationController::class, 'markAsRead']);
