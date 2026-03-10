@@ -156,7 +156,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
+    'domain' => env('SESSION_DOMAIN', '.round10-doctorappintment-team-one.huma-volve.com'),
 
     /*
     |--------------------------------------------------------------------------

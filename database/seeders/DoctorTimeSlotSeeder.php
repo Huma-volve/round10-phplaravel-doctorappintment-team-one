@@ -23,8 +23,6 @@ class DoctorTimeSlotSeeder extends Seeder
                 ['doctor_id' => $doctor->id],
                 [
                     'name' => "Clinic - Dr {$doctor->user->name}",
-                    'start_time' => '09:00:00',
-                    'end_time' => '17:00:00',
                     'address' => '123 Medical Street, Cairo, Egypt',
                     'lat' => 30.0444 + (rand(-100, 100) / 1000),
                     'lng' => 31.2357 + (rand(-100, 100) / 1000),
@@ -68,7 +66,6 @@ class DoctorTimeSlotSeeder extends Seeder
                 }
             }
         }
-
         echo "✅ Doctor time slots seeded successfully!";
     }
 }
