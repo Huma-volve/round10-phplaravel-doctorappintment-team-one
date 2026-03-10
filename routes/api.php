@@ -52,8 +52,8 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
-    Route::get('/notification-preferences', [NotificationController::class, 'preferences']);
-    Route::patch('/notification-preferences', [NotificationController::class, 'updatePreference']);
+    // Route::get('/notification-preferences', [NotificationController::class, 'preferences']);
+    // Route::patch('/notification-preferences', [NotificationController::class, 'updatePreference']);
 
     // Bookings
     Route::post('/appointments/book', [BookingController::class, 'bookslot']);
@@ -82,13 +82,13 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 Route::prefix('v1')->name('v1.')->group(function () {
 
     // Doctors
-    Route::middleware('api:sanctum')->prefix('/doctors')->name('doctors.')->group(function () {
+    Route::middleware('auth:sanctum')->prefix('/doctors')->name('doctors.')->group(function () {
         Route::get('/nearby', [DoctorController::class, 'getNearbyDoctors'])->name('nearby');
         Route::get('/{doctor}', [DoctorController::class, 'getDoctor'])->name('show');
     });
 
     // User favorites
-    Route::middleware('api:sanctum')->prefix('/user/favorites')->name('user.favorites.')->group(function () {
+    Route::middleware('auth:sanctum')->prefix('/user/favorites')->name('user.favorites.')->group(function () {
         Route::prefix('/doctors')->name('doctors.')->group(function () {
             Route::get('/', [FavoriteController::class, 'listFavorites'])->name('list');
             Route::post('/add', [FavoriteController::class, 'addToFavorite'])->name('add');
@@ -97,8 +97,7 @@ Route::prefix('v1')->name('v1.')->group(function () {
     });
 
     // Reviews
-    Route::get('reviews/getAll', [ReviewsController::class, 'getReview']);
-    Route::apiResource('reviews', ReviewsController::class);
+    Route::middleware('auth:sanctum')->apiResource('reviews', ReviewsController::class);
 
     // Doctor bookings public
     Route::get('doctorBookings', [BookingController::class, 'doctorBookings']);

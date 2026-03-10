@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Storage;
 
 class MessageController extends Controller
 {
-
     public function index(Request $request, int $conversationId): JsonResponse
     {
         $userId = $request->user()->id;
 
+        // Ensure user is part of the conversation
         if (!$this->ensureUserBelongsToConversation($userId, $conversationId)) {
             return $this->forbiddenResponse();
         }
@@ -32,33 +32,29 @@ class MessageController extends Controller
         return response()->json($messages);
     }
 
-
     public function store(MessageStoreRequest $request, int $conversation): JsonResponse
     {
         $user = $request->user();
 
+        // Get conversation
         $conversationModel = Conversation::findOrFail($conversation);
 
-        if (
-            $conversationModel->patient_id !== $user->id &&
-            $conversationModel->doctor_id !== $user->id
-        ) {
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 403);
+        // Verify user belongs to conversation
+        if ($conversationModel->patient_id !== $user->id && $conversationModel->doctor_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $message = DB::transaction(function () use ($request, $conversationModel, $user) {
 
             $message = Message::create([
-                'conversation_id' => $conversationModel->id,
-                'sender_user_id' => $user->id,
-                'type' => 'text',
-                'body' => $request->string('body')->toString(),
-                'media_url' => null,
+                'conversation_id'  => $conversationModel->id,
+                'sender_user_id'   => $user->id,
+                'type'             => 'text',
+                'body'             => $request->string('body')->toString(),
+                'media_url'        => null,
                 'media_size_bytes' => null,
-                'media_mime' => null,
-                'sent_at_utc' => now(),
+                'media_mime'       => null,
+                'sent_at_utc'      => now(),
             ]);
 
             $this->updateConversationLastMessageAt(
@@ -74,20 +70,19 @@ class MessageController extends Controller
         return response()->json($message, 201);
     }
 
-
     public function sendMediaMessage(MediaMessageStoreRequest $request): JsonResponse
     {
         $patientId = $request->user()->id;
-        $doctorId = $request->doctor_id;
+        $doctorId  = $request->doctor_id;
 
-        $conversation = Conversation::where(function ($query) use ($patientId, $doctorId) {
-            $query->where('patient_id', $patientId)
-                ->where('doctor_id', $doctorId);
-        })->first();
+        $conversation = Conversation::where([
+            'patient_id' => $patientId,
+            'doctor_id' => $doctorId
+        ])->first();
 
         if (!$conversation) {
             return response()->json([
-                'message' => 'Unauthorized, conversation does not exist.'
+                'message' => 'Unauthorized, conversation does not exist or you do not have permission to send messages.'
             ], 403);
         }
 
@@ -103,14 +98,14 @@ class MessageController extends Controller
         $message = DB::transaction(function () use ($conversation, $patientId, $path, $mime, $size, $type) {
 
             $message = Message::create([
-                'conversation_id' => $conversation->id,
-                'sender_user_id' => $patientId,
-                'type' => $type,
-                'body' => null,
-                'media_url' => Storage::disk('public')->url($path),
+                'conversation_id'  => $conversation->id,
+                'sender_user_id'   => $patientId,
+                'type'             => $type,
+                'body'             => null,
+                'media_url'        => Storage::disk('public')->url($path),
                 'media_size_bytes' => $size,
-                'media_mime' => $mime,
-                'sent_at_utc' => now(),
+                'media_mime'       => $mime,
+                'sent_at_utc'      => now(),
             ]);
 
             $this->updateConversationLastMessageAt(
@@ -126,38 +121,6 @@ class MessageController extends Controller
         return response()->json($message, 201);
     }
 
-
-    private function updateConversationLastMessageAt(int $conversationId, $sentAt): void
-    {
-        Conversation::query()
-            ->whereKey($conversationId)
-            ->update([
-                'last_message_at_utc' => $sentAt,
-            ]);
-    }
-
-
-    private function ensureUserBelongsToConversation(int $userId, int $conversationId): bool
-    {
-        return Conversation::query()
-            ->whereKey($conversationId)
-            ->where(function ($query) use ($userId) {
-                $query->where('patient_id', $userId)
-                    ->orWhere('doctor_id', $userId);
-            })
-            ->exists();
-    }
-
-
-    private function forbiddenResponse(): JsonResponse
-    {
-        return response()->json([
-            'status' => false,
-            'message' => 'You are not allowed to access this conversation.'
-        ], 403);
-    }
-
-
     public function fetchMessages(Request $request, int $conversationId)
     {
         $userId = $request->user()->id;
@@ -172,5 +135,33 @@ class MessageController extends Controller
             ->paginate(20);
 
         return response()->json($messages);
+    }
+
+    private function updateConversationLastMessageAt(int $conversationId, $sentAt): void
+    {
+        Conversation::query()
+            ->whereKey($conversationId)
+            ->update([
+                'last_message_at_utc' => $sentAt,
+            ]);
+    }
+
+    private function ensureUserBelongsToConversation(int $userId, int $conversationId): bool
+    {
+        return Conversation::query()
+            ->whereKey($conversationId)
+            ->where(function ($query) use ($userId) {
+                $query->where('patient_id', $userId)
+                    ->orWhere('doctor_id', $userId);
+            })
+            ->exists();
+    }
+
+    private function forbiddenResponse(): JsonResponse
+    {
+        return response()->json([
+            'status'  => false,
+            'message' => 'You are not allowed to access this conversation.'
+        ], 403);
     }
 }
