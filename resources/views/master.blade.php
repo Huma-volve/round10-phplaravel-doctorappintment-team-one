@@ -29,8 +29,9 @@
 
     <!-- Template Stylesheet -->
     <link href="{{asset('dashboard/css/style.css')}}" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/line-awesome/css/line-awesome.min.css" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
 </head>
 
 <body>
@@ -80,6 +81,10 @@
 
     <!-- Template Javascript -->
     <script src="{{asset('dashboard/js/main.js')}}"></script>
+
+    {{-- TABLE --}}
+
+
 </body>
 
 </html>

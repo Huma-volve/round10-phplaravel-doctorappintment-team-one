@@ -36,7 +36,7 @@ class Doctor extends Model
     }
     public function clinics()
     {
-        return $this->hasMany(Clinic::class);
+        return $this->hasMany(Clinic::class,'doctor_id');
     }
 
     public function cancellationPolicy()

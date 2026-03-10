@@ -88,6 +88,9 @@ class DatabaseSeeder extends Seeder
 
         // Call the DoctorTimeSlotSeeder
         $this->call(DoctorTimeSlotSeeder::class);
+        
+        // Call the TestDataSeeder
+        $this->call(TestDataSeeder::class);
     }
 
 }

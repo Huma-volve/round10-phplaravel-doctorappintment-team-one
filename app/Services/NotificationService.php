@@ -43,16 +43,27 @@ class NotificationService
             'sent_at_utc' => now(),
         ]);
 
-        // // Send email if needed
-        // if ($channel === 'email' && $user->email) {
-        //     Mail::raw($body, function ($message) use ($user, $title) {
-        //         $message->to($user->email)
-        //                 ->subject($title);
-        //     });
 
-        //     $notification->update([
-        //         'provider_message_id' => 'email_sent'
-        //     ]);
-        // }
+    }
+
+    public function notifyAdmin(
+        string $event,
+        string $channel,
+        string $title,
+        string $body,
+        array $data = []
+    ): void {
+        $admin = User::where('role', 'admin')->first();
+
+        if ($admin) {
+            $this->notify(
+                $admin->id,
+                $event,
+                $channel,
+                $title,
+                $body,
+                $data
+            );
+        }
     }
 }
