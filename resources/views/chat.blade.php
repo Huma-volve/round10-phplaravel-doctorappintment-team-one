@@ -172,6 +172,12 @@
             /* تغيير الخلفية عند الضغط */
         }
 
+        .patient-item.unread {
+            background-color: #fff3f3;
+            /* لون فاتح يشير لوجود رسالة جديدة */
+            transition: background 0.3s;
+        }
+
         /* Input Area */
         .chat-footer {
             padding: 15px;
@@ -245,16 +251,22 @@
         </main>
 
     </div>
-
     <script>
-        // Pass user ID from Laravel to JavaScript
+        // تمرير معرف المستخدم من Laravel
         window.currentUserId = {{ $currentUserId ?? 'null' }};
 
         document.addEventListener('DOMContentLoaded', function() {
 
-            const currentUserId = window.currentUserId ?? null;
-            let currentConversationId = null;
+            // عناصر DOM
+            const sendBtn = document.getElementById('sendBtn');
+            const messageInput = document.getElementById('messageInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const conversationsList = document.getElementById('conversationsList');
+            const headerName = document.getElementById('headerName');
+            const headerAvatar = document.getElementById('headerAvatar');
 
+            // الإعدادات العامة
+            const currentUserId = window.currentUserId ?? null;
             const apiBaseUrl = '/api/v1/conversations';
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
@@ -264,13 +276,14 @@
                 'X-CSRF-TOKEN': csrfToken,
             };
 
-            const sendBtn = document.getElementById('sendBtn');
-            const messageInput = document.getElementById('messageInput');
-            const chatMessages = document.getElementById('chatMessages');
-            const conversationsList = document.getElementById('conversationsList');
-            const headerName = document.getElementById('headerName');
-            const headerAvatar = document.getElementById('headerAvatar');
+            // المتغيرات
+            let currentConversationId = null;
+            let pollingInterval = null;
+            let lastMessageId = null;
+            let echoChannel = null;
+            const renderedMessageIds = new Set(); // تتبع الرسائل المعروضة لتجنب التكرار
 
+            // وظائف مساعدة
             function scrollToBottom() {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
@@ -289,109 +302,109 @@
                 });
             }
 
-            function setActiveConversation(id) {
-                document.querySelectorAll('.patient-item').forEach(item => {
-                    item.classList.remove('active');
+            function renderMessage(msg) {
+                // تجنب تكرار الرسائل
+                if (renderedMessageIds.has(msg.id)) {
+                    return;
+                }
+                renderedMessageIds.add(msg.id);
+
+                const isMine = Number(msg.sender_user_id) === Number(currentUserId);
+                const className = isMine ? 'my-message' : 'their-message';
+                const time = new Date(msg.sent_at_utc).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
                 });
 
-                const active = document.querySelector(`[data-id="${id}"]`);
-                if (active) active.classList.add('active');
+                const html = `
+                <div class="message ${className} ${!isMine && !msg.read_at_utc ? 'unread' : 'read'}" data-id="${msg.id}">
+                    ${msg.body ?? ''}
+                    <span class="message-time">${time}</span>
+                </div>
+            `;
+                chatMessages.insertAdjacentHTML('beforeend', html);
             }
 
             async function fetchConversations() {
-
                 conversationsList.innerHTML = '<li class="loading">Loading conversations...</li>';
 
                 try {
-
-                    const response = await fetch(apiBaseUrl, {
-                        method: 'GET',
+                    const res = await fetch(apiBaseUrl, {
                         headers: fetchHeaders,
                         credentials: 'same-origin'
                     });
-
-                    if (!response.ok) throw new Error('Failed to fetch conversations');
-
-                    const conversations = await response.json();
+                    if (!res.ok) throw new Error('Failed to fetch conversations');
+                    const conversations = await res.json();
 
                     conversationsList.innerHTML = '';
-
                     if (!conversations.length) {
                         conversationsList.innerHTML = '<li class="loading">No conversations</li>';
                         return;
                     }
 
-                    conversations.forEach(conversation => {
-
+                    conversations.forEach(conv => {
                         const li = document.createElement('li');
                         li.className = 'patient-item';
-                        li.dataset.id = conversation.id;
+                        li.dataset.id = conv.id;
+
+                        // إنشاء عنصر عداد الرسائل غير المقروءة
+                        let unreadBadge = '';
+                        if (conv.unread_count > 0) {
+                            unreadBadge =
+                                `<span class="unread-badge" style="background: #dc3545; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; margin-right: 5px;">${conv.unread_count}</span>`;
+                        }
 
                         li.innerHTML = `
-                    <div class="avatar">${getInitial(conversation.user_name)}</div>
-                    <div style="flex:1">
-                        <strong>${conversation.user_name}</strong><br>
-                        <small>${conversation.last_message ?? ''}</small>
-                    </div>
-                    <small>${formatTime(conversation.last_message_at)}</small>
-                `;
-
-                        // عند الضغط على المحادثة، يتم تفعيل فتح المحادثة
-                        li.addEventListener('click', () => {
-                            openConversation(conversation.id, conversation.user_name);
-                        });
-
+                        <div class="avatar">${getInitial(conv.user_name)}</div>
+                        <div style="flex:1">
+                            <strong>${conv.user_name}</strong><br>
+                            <small>${conv.last_message ?? ''}</small>
+                        </div>
+                        ${unreadBadge}
+                        <small>${formatTime(conv.last_message_at)}</small>
+                    `;
+                        li.addEventListener('click', () => openConversation(conv.id, conv.user_name));
                         conversationsList.appendChild(li);
                     });
-                    openConversation(conversations[0].id, conversations[0].user_name);
+
+                    // فتح أول محادثة افتراضيًا
+                    // openConversation(conversations[0].id, conversations[0].user_name);
 
                 } catch (error) {
-
                     console.error(error);
                     conversationsList.innerHTML = '<li class="loading">Error loading conversations</li>';
-
                 }
             }
 
-            async function openConversation(conversationId, userName) {
-                currentConversationId = conversationId;
-                headerName.textContent = userName ?? 'Unknown';
-                headerAvatar.textContent = getInitial(userName);
-
-                setActiveConversation(conversationId);
-
-                // تمكين حقل الإدخال وإظهار زر الإرسال
-                messageInput.disabled = false;
-                sendBtn.disabled = false;
-
-                await fetchMessages(conversationId);
+            function setActiveConversation(id) {
+                document.querySelectorAll('.patient-item').forEach(item => item.classList.remove('active'));
+                const active = document.querySelector(`[data-id="${id}"]`);
+                if (active) active.classList.add('active');
             }
 
             async function fetchMessages(conversationId) {
                 chatMessages.innerHTML = '<div class="loading">Loading messages...</div>';
 
+                // مسح مجموعة الرسائل المعروضة عند فتح محادثة جديدة
+                renderedMessageIds.clear();
+
                 try {
-                    const response = await fetch(`${apiBaseUrl}/${conversationId}/messages`, {
-                        method: 'GET',
+                    const res = await fetch(`${apiBaseUrl}/${conversationId}/messages`, {
                         headers: fetchHeaders,
                         credentials: 'same-origin'
                     });
-
-                    if (!response.ok) throw new Error('Failed to fetch messages');
-
-                    const data = await response.json();
+                    if (!res.ok) throw new Error('Failed to fetch messages');
+                    const data = await res.json();
                     const messages = data.data ?? [];
 
-                    chatMessages.innerHTML = ''; // تفريغ الرسائل القديمة
-
+                    chatMessages.innerHTML = '';
                     if (!messages.length) {
                         chatMessages.innerHTML = '<div class="loading">No messages yet</div>';
                         return;
                     }
 
-                    // عكس ترتيب الرسائل بحيث تكون الأحدث في الأعلى
-                    messages.reverse().forEach(renderMessage); // عكس ترتيب الرسائل قبل عرضها
-
+                    messages.reverse().forEach(renderMessage);
+                    lastMessageId = messages[messages.length - 1]?.id ?? null;
                     scrollToBottom();
                 } catch (error) {
                     console.error(error);
@@ -399,36 +412,146 @@
                 }
             }
 
-            function renderMessage(msg) {
-                const isMine = Number(msg.sender_user_id) === Number(currentUserId); // التحقق من هوية المرسل
-                const className = isMine ? 'my-message' : 'their-message'; // تخصيص الجهة بناءً على المرسل
+            async function markConversationAsRead(conversationId) {
+                try {
+                    await fetch(`${apiBaseUrl}/${conversationId}/read`, {
+                        method: 'POST',
+                        headers: fetchHeaders,
+                        credentials: 'same-origin'
+                    });
 
-                const time = new Date(msg.sent_at_utc).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+                    // إزالة حالة unread من الرسائل في المحادثة
+                    document.querySelectorAll('.message.unread').forEach(msg => msg.classList.replace('unread',
+                        'read'));
 
-                const html = `
-        <div class="message ${className}">
-            ${msg.body ?? ''}
-            <span class="message-time">${time}</span>
-        </div>
-    `;
+                    // إزالة اللون الأحمر والعداد من القائمة الجانبية
+                    updateUnreadCountInList(conversationId, 0);
+                } catch (error) {
+                    console.error('Failed to mark conversation as read:', error);
+                }
+            }
+            // وظيفة لتحديث عداد الرسائل غير المقروءة في القائمة الجانبية
+            function updateUnreadCountInList(conversationId, count) {
+                const item = document.querySelector(`.patient-item[data-id="${conversationId}"]`);
+                if (!item) return;
 
-                chatMessages.insertAdjacentHTML('beforeend', html); // إضافة الرسالة إلى نافذة المحادثة
+                let badge = item.querySelector('.unread-badge');
+
+                if (count > 0) {
+                    if (!badge) {
+                        badge = document.createElement('span');
+                        badge.className = 'unread-badge';
+                        badge.style.cssText =
+                            'background: #dc3545; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; margin-right: 5px;';
+                        item.appendChild(badge);
+                    }
+                    badge.textContent = count;
+                    // تلوين المحادثة نفسها
+                    item.classList.add('unread');
+                } else {
+                    if (badge) badge.remove();
+                    // إزالة اللون عند عدم وجود رسائل جديدة
+                    item.classList.remove('unread');
+                }
+            }
+
+            // وظيفة لتحديث آخر رسالة في القائمة الجانبية
+            function updateConversationInList(conversationId, lastMessage, time) {
+                const item = document.querySelector(`.patient-item[data-id="${conversationId}"]`);
+                if (!item) return;
+
+                const messageEl = item.querySelector('small');
+                if (messageEl) {
+                    messageEl.textContent = lastMessage;
+                }
+
+                const timeEl = item.querySelectorAll('small');
+                if (timeEl.length > 1) {
+                    timeEl[1].textContent = formatTime(time);
+                }
+            }
+
+            // وظيفة لإظهار إشعار برسالة جديدة
+            function showNotification(userName, message) {
+                // إشعار في عنوان الصفحة
+                const originalTitle = document.title;
+                document.title = `💬 ${userName}: ${message.substring(0, 30)}...`;
+
+                // إعادة عنوان الصفحة بعد 3 ثوانٍ
+                setTimeout(() => {
+                    document.title = originalTitle;
+                }, 3000);
+            }
+
+            function startPolling(conversationId) {
+                currentConversationId = conversationId;
+                lastMessageId = null;
+
+                if (pollingInterval) clearInterval(pollingInterval);
+                pollingInterval = setInterval(async () => {
+                    if (!currentConversationId) return;
+
+                    try {
+                        const res = await fetch(`${apiBaseUrl}/${currentConversationId}/messages`, {
+                            headers: fetchHeaders,
+                            credentials: 'same-origin'
+                        });
+                        if (!res.ok) throw new Error('Failed to poll messages');
+                        const data = await res.json();
+                        const messages = data.data ?? [];
+
+                        messages.reverse().forEach(msg => {
+                            if (msg.id > (lastMessageId ?? 0)) {
+                                renderMessage(msg);
+                                lastMessageId = msg.id;
+                            }
+                        });
+                        scrollToBottom();
+                    } catch (error) {
+                        console.error('Polling error:', error);
+                    }
+                }, 2000);
+            }
+
+            async function openConversation(conversationId, userName) {
+                // ترك القناة السابقة
+                if (echoChannel) {
+                    echoChannel.stopListening('.message.sent');
+                    echoChannel = null;
+                }
+
+                currentConversationId = conversationId;
+                setActiveConversation(conversationId);
+                headerName.textContent = userName ?? 'Unknown';
+                headerAvatar.textContent = getInitial(userName);
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+
+                await fetchMessages(conversationId);
+                await markConversationAsRead(conversationId);
+                startPolling(conversationId);
+
+                // الاشتراك في Echo للمحادثة الحالية
+                echoChannel = window.Echo.private(`conversation.${conversationId}`)
+                    .listen('.message.sent', (e) => {
+                        if (Number(e.sender_id) !== Number(currentUserId)) {
+                            renderMessage(e);
+                            scrollToBottom();
+                            // تحديث آخر رسالة في القائمة
+                            updateConversationInList(conversationId, e.body, e.sent_at_utc);
+                        }
+                    });
             }
 
             async function sendMessage() {
-
                 const text = messageInput.value.trim();
-
                 if (!text || !currentConversationId) return;
 
+                sendBtn.disabled = true; // منع إرسال أكثر من مرة
                 messageInput.value = '';
 
                 try {
-
-                    const response = await fetch(`${apiBaseUrl}/${currentConversationId}/messages`, {
+                    const res = await fetch(`${apiBaseUrl}/${currentConversationId}/messages`, {
                         method: 'POST',
                         headers: fetchHeaders,
                         credentials: 'same-origin',
@@ -436,77 +559,31 @@
                             body: text
                         })
                     });
-
-                    if (!response.ok) throw new Error('Failed to send message');
-
-                    const res = await response.json();
-                    const message = res.data ?? res;
-
-                    renderMessage(message);
+                    if (!res.ok) throw new Error('Failed to send message');
+                    const data = await res.json();
+                    renderMessage(data.data ?? data);
                     scrollToBottom();
                 } catch (error) {
-
                     console.error(error);
                     alert('Failed to send message');
-
+                } finally {
+                    sendBtn.disabled = false;
                 }
             }
 
+            // أحداث
             sendBtn.addEventListener('click', sendMessage);
-
-            messageInput.addEventListener('keypress', function(e) {
+            messageInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') sendMessage();
             });
 
+            // بدء التطبيق
             fetchConversations();
 
+            // تحديث قائمة المحادثات كل 10 ثوانٍ للكشف عن رسائل جديدة من محادثات أخرى
+            setInterval(() => {
+                fetchConversations();
+            }, 10000);
         });
-
-        // إضافة كلاس unread أو read عند تحميل الرسائل
-        function renderMessage(msg) {
-            const isUnread = msg.read_at_utc === null; // تحقق إذا كانت الرسالة غير مقروءة
-            const className = isUnread ? 'message unread' : 'message read'; // تحديد اللون بناءً على حالة القراءة
-
-            const time = new Date(msg.sent_at_utc).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-
-            const html = `
-        <div class="${className}" data-id="${msg.id}">
-            ${msg.body ?? ''}
-            <span class="message-time">${time}</span>
-        </div>
-    `;
-
-            chatMessages.insertAdjacentHTML('beforeend', html);
-
-            // إضافة حدث عند الضغط على الرسالة
-            document.querySelector(`[data-id="${msg.id}"]`).addEventListener('click', function() {
-                markAsRead(msg.id);
-            });
-        }
-
-        // وظيفة لتغيير الحالة إلى "مقروءة"
-        async function markAsRead(messageId) {
-            try {
-                const response = await fetch(`/api/v1/messages/${messageId}/markAsRead`, {
-                    method: 'PATCH',
-                    headers: fetchHeaders,
-                    credentials: 'same-origin',
-                });
-
-                if (!response.ok) throw new Error('Failed to mark as read');
-
-                // عند النجاح، نقوم بتحديث الرسالة لتصبح مقروءة
-                const messageElement = document.querySelector(`[data-id="${messageId}"]`);
-                if (messageElement) {
-                    messageElement.classList.remove('unread');
-                    messageElement.classList.add('read');
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        }
     </script>
 @endsection
