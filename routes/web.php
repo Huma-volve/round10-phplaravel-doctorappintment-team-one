@@ -122,18 +122,6 @@ Route::middleware(['auth','role:doctor'])->prefix('doctor')->name('doctor.')->gr
         Route::get('/',[EarningsController::class, 'index'])->name('index');
     });
 
-    Route::prefix('/settings')->name('settings.')->group(function(){
-        Route::get('/',[SettingController::class, 'index'])->name('index');
-        Route::post('/update',[SettingController::class, 'update'])->name('update');
-    });
-
-    Route::prefix('/clinics')->name('clinics.')->group(function(){
-        Route::post('/create',[SettingController::class, 'create'])->name('create');
-        Route::post('/edit',[SettingController::class, 'edit'])->name('edit');
-        Route::delete('/delete',[SettingController::class, 'delete'])->name('delete');
-    });
-
-    
     Route::post('/profile/clinics', [ProfileController::class, 'addClinic'])
         ->name('profile.add.clinic');
 });
