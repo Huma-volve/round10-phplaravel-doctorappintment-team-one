@@ -4,6 +4,10 @@
 
 use App\Http\Controllers\Web\Admin\FaqsController;
 use App\Http\Controllers\Web\Admin\PoliciesController;
+use App\Http\Controllers\Api\Bookingcontroller;
+use App\Http\Controllers\BookingtableController;
+use App\Http\Controllers\manage_userController;
+use App\Http\Controllers\paymentController;
 use App\Http\Controllers\Web\Admin\DoctorController;
 use App\Http\Controllers\Web\Admin\SpecialtyController;
 use App\Http\Controllers\Web\Doctor\ProfileController;
@@ -20,6 +24,23 @@ Route::get('/', function () {
 
 
 
+/////////////// admin show users/////////////
+
+Route::get('showpatient',[manage_userController::class,'index'])->name('showpatient');
+Route::delete('deletepatient/{id}',[manage_userController::class,'delete'])->name('deletepatient');
+Route::put('editstatus/{id}',[manage_userController::class,'edit'])->name('editstatus');
+Route::get('showdoctor',[manage_userController::class,'showdoctor'])->name('showdoctor');
+Route::delete('deletedoctor/{id}',[manage_userController::class,'deletedoctor'])->name('deletedoctor');
+Route::put('editstatusdoctor/{id}',[manage_userController::class,'editdoctor'])->name('editstatusdoctor');
+
+////////////////// Booking table //////////////////////////////////////////
+Route::get('bookingtable',[BookingtableController::class,'index'])->name('bookingtable');
+
+Route::delete('deleteBooking/{id}',[BookingtableController::class,'deleteBooking'])->name('deleteBooking');
+
+////////////////////// payment table//////////////////////////
+Route::get('paymenttable',[paymentController::class,'index'])->name('paymenttable');
+Route::get('showPayment/{id}',[paymentController::class,'showPayment'])->name('showPayment');
 
 Route::post('/test-login', function (Request $request) {
     $request->validate([
