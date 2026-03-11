@@ -31,6 +31,12 @@
                     <a href="{{ route('showdoctor') }}" class="dropdown-item">Doctor</a>
                 </div>
             </div>
+            <div class="nav-item">
+                <a href="{{ route('notifications.index') }}" class="nav-link d-flex justify-content-between align-items-center">
+                    <span><i class="fa-solid fa-bell me-2"></i>Notifications</span>
+                   
+                </a>
+            </div> 
             <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
             <a href="{{ route('chat') }}" class="nav-item nav-link">
                 <i class="fa fa-comments me-2"></i>Chat

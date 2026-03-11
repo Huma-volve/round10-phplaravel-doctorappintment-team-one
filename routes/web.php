@@ -89,14 +89,7 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
     Route::post('/specialties',[SpecialtyController::class,'store'])->name('specialties.store');
 
     /// Notifications
-       Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
-    Route::get('/notifications/type/{type}', [NotificationController::class, 'getByType'])->name('notifications.by-type');
-    Route::get('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
-    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
-    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
-    Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');
-
+  
     Route::resource('Faqs', FaqsController::class);
     Route::resource('Policies', PoliciesController::class);
 
