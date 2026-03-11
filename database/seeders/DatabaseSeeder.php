@@ -70,24 +70,27 @@ class DatabaseSeeder extends Seeder
                     $specialties->random(rand(1, 3))->pluck('id')->toArray()
                 );
 
-                // for ($c = 1; $c <= rand(1, 2); $c++) {
+                for ($c = 1; $c <= rand(1, 2); $c++) {
 
-                //     Clinic::create([
-                //         'doctor_id' => $doctor->id,
-                //         'name' => "Clinic $c - Dr $i",
-                //         'address' => 'Cairo, Egypt',
-                //         'lat' => 30.0444 + (rand(-100, 100) / 1000),
-                //         'lng' => 31.2357 + (rand(-100, 100) / 1000),
-                //         'session_duration_minutes' => 30,
-                //         'session_price_cents' => rand(20000, 80000),
-                //         'currency' => 'EGP',
-                //     ]);
-                // }
+                    Clinic::create([
+                        'doctor_id' => $doctor->id,
+                        'name' => "Clinic $c - Dr $i",
+                        'address' => 'Cairo, Egypt',
+                        'lat' => 30.0444 + (rand(-100, 100) / 1000),
+                        'lng' => 31.2357 + (rand(-100, 100) / 1000),
+                        'session_duration_minutes' => 30,
+                        'session_price_cents' => rand(20000, 80000),
+                        'currency' => 'EGP',
+                    ]);
+                }
             }
         });
 
         // Call the DoctorTimeSlotSeeder
         $this->call(DoctorTimeSlotSeeder::class);
+        
+        // Call the TestDataSeeder
+        $this->call(TestDataSeeder::class);
     }
 
 }

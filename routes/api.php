@@ -52,23 +52,26 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
-    Route::get('/notification-preferences', [NotificationController::class, 'preferences']);
-    Route::patch('/notification-preferences', [NotificationController::class, 'updatePreference']);
+    // Route::get('/notification-preferences', [NotificationController::class, 'preferences']);
+    // Route::patch('/notification-preferences', [NotificationController::class, 'updatePreference']);
 
     // Bookings
+    Route::get('/doctors/{id}/slots', [BookingController::class, 'availableSlots']);
     Route::post('/appointments/book', [BookingController::class, 'bookslot']);
     Route::get('/appointments/my', [BookingController::class, 'myBookings']);
     Route::delete('/mybooking/{id}/cancel', [BookingController::class, 'cancel']);
     Route::put('/booking/{id}/update', [BookingController::class, 'update']);
 
     // Messaging
+    Route::get('conversations', [ConversationController::class, 'index']);
+    Route::post('conversations/create', [ConversationController::class, 'createConversation']);
     Route::post('conversations/{conversation}/messages', [MessageController::class, 'store']);
     Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);
     Route::post('/conversations/{conversation}/read', [ConversationController::class, 'markAsRead']);
     Route::get('/conversations/{conversation}/unread', [ConversationController::class, 'unreadCount']);
     Route::post('conversations/{conversation}/messages/media', [MessageController::class, 'sendMediaMessage']);
-    Route::post('/conversations/{conversation_id}/favorite', [ConversationController::class, 'toggleFavorite']);
-    Route::post('/conversations/{conversation_id}/archive', [ConversationController::class, 'archiveConversation']);
+    Route::post('/conversations/{conversation}/favorite', [ConversationController::class, 'toggleFavorite']);
+    Route::post('/conversations/{conversation}/archive', [ConversationController::class, 'archiveConversation']);
     // Search history
     Route::get('/search-history', [SearchController::class, 'index']);
     Route::post('/search', [SearchController::class, 'search_for_doctor']);
@@ -80,13 +83,13 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 Route::prefix('v1')->name('v1.')->group(function () {
 
     // Doctors
-    Route::middleware('api:sanctum')->prefix('/doctors')->name('doctors.')->group(function () {
+    Route::middleware('auth:sanctum')->prefix('/doctors')->name('doctors.')->group(function () {
         Route::get('/nearby', [DoctorController::class, 'getNearbyDoctors'])->name('nearby');
         Route::get('/{doctor}', [DoctorController::class, 'getDoctor'])->name('show');
     });
 
     // User favorites
-    Route::middleware('api:sanctum')->prefix('/user/favorites')->name('user.favorites.')->group(function () {
+    Route::middleware('auth:sanctum')->prefix('/user/favorites')->name('user.favorites.')->group(function () {
         Route::prefix('/doctors')->name('doctors.')->group(function () {
             Route::get('/', [FavoriteController::class, 'listFavorites'])->name('list');
             Route::post('/add', [FavoriteController::class, 'addToFavorite'])->name('add');

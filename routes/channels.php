@@ -7,13 +7,9 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
-
-    $conversation = Conversation::find($conversationId);
-
-    if (!$conversation) {
-        return false;
-    }
-
-    return $conversation->patient_id == $user->id
-        || $conversation->doctor_id == $user->id;
+    return Conversation::where('id', $conversationId)
+        ->where(function ($query) use ($user) {
+            $query->where('patient_id', $user->id)
+                ->orWhere('doctor_id', $user->id);
+        })->exists();
 });

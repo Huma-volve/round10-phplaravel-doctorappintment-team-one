@@ -15,7 +15,7 @@ class PaymentController extends Controller
 {
  public function createPaymentIntent(Request $request){
     $valdiated=$request->validate([
-        'booking_id'=>'required|exists:Bookings,id'
+        'booking_id'=>'required|exists:bookings,id'
     ]);
     $booking=Booking::findOrFail($valdiated['booking_id']);
       if ($booking->status != 'pending_payment') {
@@ -76,6 +76,18 @@ $booking = Booking::findOrFail($payment->booking_id);
                 'Your payment has been processed successfully. Your booking is confirmed.',
                 ['booking_id' => $booking->id,
                  'payment_id' => $payment->id]
+            );
+            
+            // Notify admin of successful payment
+            app(NotificationService::class)->notifyAdmin(
+                'payment',
+                'in_app',
+                'Payment Received',
+                'A payment has been successfully processed.',
+                ['booking_id' => $booking->id,
+                 'payment_id' => $payment->id,
+                 'amount' => $payment->amount_cents,
+                 'currency' => $payment->currency]
             );
          }
     }
