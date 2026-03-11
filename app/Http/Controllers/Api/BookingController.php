@@ -75,7 +75,9 @@ class Bookingcontroller extends Controller
             [
                 'booking_id' => $booking->id,
                 'patient_id' => $booking->patient_id,
+                'patient_name' => $booking->patient?->name,
                 'doctor_id' => $booking->doctor_id,
+                'doctor_name' => $slots->doctor?->user?->name,
                 'time_slot_id' => $slots->id,
             ]
         );
@@ -157,7 +159,10 @@ class Bookingcontroller extends Controller
                 'booking_id' => $booking->id,
                 'patient_id' => $booking->patient_id,
                 'doctor_id' => $booking->doctor_id,
+                'patient_name' => $booking->patient?->name,
+                'doctor_name' => $booking->doctor?->user?->name,
                 'time_slot_id' => $slot->id,
+
             ]
         );
 
@@ -230,6 +235,8 @@ class Bookingcontroller extends Controller
             [
                 'booking_id' => $oldBooking->id,
                 'patient_id' => $oldBooking->patient_id,
+                'patient_name' => $oldBooking->patient?->name,
+                'doctor_name' => $oldBooking->doctor?->user?->name,
                 'time_slot_id' => $newSlot->id,
             ]
         );
@@ -243,7 +250,10 @@ class Bookingcontroller extends Controller
             [
                 'booking_id' => $oldBooking->id,
                 'patient_id' => $oldBooking->patient_id,
+                'patient_name' => $oldBooking->patient?->name,
                 'doctor_id' => $oldBooking->doctor_id,
+                'doctor_name' => $oldBooking->doctor?->user?->name,
+
                 'time_slot_id' => $newSlot->id,
             ]
         );
