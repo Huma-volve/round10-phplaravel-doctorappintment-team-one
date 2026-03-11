@@ -26,14 +26,20 @@
                     <a href="{{ route('showdoctor') }}" class="dropdown-item">Doctor</a>
                </div>
           </div>
+         
           <a href="{{ route('bookingtable') }}" class="nav-item nav-link"><i class="fa-solid fa-table"></i>Booking</a>
+         
+          
+         
           @endif
             @if(auth()->check() && auth()->user()->role=='doctor')
           <a href="{{ route('doctorpanal') }}" class="nav-item nav-link"><i class="fa-solid fa-table"></i>mybooking</a>
            @endif
               @if(auth()->check() && auth()->user()->role=='admin')
-          <a href="{{ route('admin.specialties.index') }}" class="nav-item nav-link"><i class="fa-solid fa-bars"></i>Specialties</a>
+               <a href="{{ route('admin.specialties.index') }}" class="nav-item nav-link"><i class="fa-solid fa-bars"></i>Specialties</a>
           @endif
+         
+          
           <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
           <div class="nav-item dropdown">
                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
@@ -103,12 +109,21 @@
                  
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                                class="fa fa-laptop me-2"></i>FAQS and Policies</a>
+                                class="fa fa-laptop me-2"></i>FAQS & Policies</a>
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="/admin/Faqs" class="dropdown-item">FAQS</a>
                             <a href="/admin/Policies" class="dropdown-item">Policies</a>
 
                         </div>
+
+                         <div class="nav-item dropdown">
+                              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-chart-bar me-2"></i></i>Reports</a>
+                              <div class="dropdown-menu bg-transparent border-0">
+                                   <a href="/admin/doctor-reviews-report" class="dropdown-item">Doctor Review Report</a>
+                                   <a href="/admin/doctor-booking-report" class="dropdown-item">Doctor Booking Report</a>
+                              
+                              </div>
+                         </div>
                     </div>
                 @endif
             </div>
