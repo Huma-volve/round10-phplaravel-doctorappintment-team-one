@@ -48,7 +48,7 @@ class ReviewServices
                     'in_app' , 
                     'New Review Submitted' , 
                     'A new review has been submitted for a doctor.' , 
-                    ['rating'=>$data->rating , 'comment'=>$data->comment, 'review_id'=>$reviews->id, 'doctor_id'=>$data->doctor_id]
+                    ['rating'=>$data->rating , 'comment'=>$data->comment, 'review_id'=>$reviews->id, 'doctor_id'=>$data->doctor_id , 'doctor_name'=>$doctor?->user?->name   ]
                );
 
                return  true ;

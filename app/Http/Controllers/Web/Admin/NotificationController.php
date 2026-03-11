@@ -77,14 +77,11 @@ class NotificationController extends Controller
    
     public function markAsRead($id)
     {
-        $admin = User::where('role', 'admin')->first();
+         $user = auth()->user();
 
-        if (!$admin) {
-            return response()->json(['message' => 'Admin not found'], 404);
-        }
 
         $notification = NotificationLog::where('id', $id)
-            ->where('user_id', $admin->id)
+            ->where('user_id', $user->id)
             ->firstOrFail();
 
         if ($notification->read_at_utc === null) {
@@ -93,19 +90,16 @@ class NotificationController extends Controller
         }
 
         
-         return redirect()->back()->with('success', 'Notification marked as readorized');
+         return redirect()->back()->with('success', 'Notification marked as read');
     }
 
    
     public function markAllAsRead()
     {
-        $admin = User::where('role', 'admin')->first();
+         $user = auth()->user();
 
-        if (!$admin) {
-            return response()->json(['message' => 'Admin not found'], 404);
-        }
 
-        NotificationLog::where('user_id', $admin->id)
+        NotificationLog::where('user_id', $user->id)
             ->whereNull('read_at_utc')
             ->update(['read_at_utc' => now()]);
 
@@ -115,14 +109,11 @@ class NotificationController extends Controller
    
     public function delete($id)
     {
-        $admin = User::where('role', 'admin')->first();
+         $user = auth()->user();
 
-        if (!$admin) {
-            return response()->json(['message' => 'Admin not found'], 404);
-        }
 
         $notification = NotificationLog::where('id', $id)
-            ->where('user_id', $admin->id)
+            ->where('user_id', $user->id)
             ->firstOrFail();
 
         $notification->delete();
