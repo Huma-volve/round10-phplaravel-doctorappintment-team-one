@@ -3,25 +3,17 @@
 @section('title', 'Show Notifications')
 
 @section('content')
-@php
-    $role = auth()->user()?->role;
-    $routeName = match ($role) {
-        'doctor' => 'doctor.notifications.index',
-        'admin' => 'admin.notifications.index',
-        default => 'notifications.index',
-    };
-    $isUnread = request()->boolean('unread');
-@endphp
+
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Notifications</h2>
 
-        <div class="d-flex gap-2">
+        {{-- <div class="d-flex gap-2">
             <a href="{{ route($routeName) }}"
                class="btn btn-sm {{ $isUnread ? 'btn-outline-secondary' : 'btn-primary' }}">
                 All
-            </a>
+            </a> --}}
 
             {{-- <a href="{{ route($routeName, ['unread' => 1]) }}"
                class="btn btn-sm {{ $isUnread ? 'btn-primary' : 'btn-outline-secondary' }}">
@@ -31,8 +23,7 @@
             <form action="{{ route('notifications.mark-all-read') }}" method="POST" class="d-inline">
                 @csrf
                 @method('PATCH')
-                <button type="submit" class="btn btn-sm btn-success"
-                    onclick="return confirm('Mark all notifications as read?')">
+                <button type="submit" class="btn btn-sm btn-success">
                     Mark all as read
                 </button>
             </form>
