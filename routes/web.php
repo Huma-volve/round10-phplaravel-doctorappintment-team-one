@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Bookingcontroller;
 use App\Http\Controllers\BookingtableController;
 use App\Http\Controllers\manage_userController;
 use App\Http\Controllers\paymentController;
+use App\Http\Controllers\Web\Admin\DashboardController;
 use App\Http\Controllers\Web\Admin\DoctorController;
 use App\Http\Controllers\Web\Admin\SpecialtyController;
 use App\Http\Controllers\Web\Doctor\ProfileController;
@@ -21,6 +22,8 @@ use App\Http\Controllers\Web\Auth\AuthController;
 Route::get('/', function () {
     return view('master');
 })->name('home');
+
+
 
 
 
@@ -68,6 +71,8 @@ Route::prefix('web/auth')->group(function () {
 });
 
 
+
+
 Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group(function(){
 
     Route::get('/doctors/create',[DoctorController::class,'create'])->name('doctors.create');
@@ -80,6 +85,12 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
 
     Route::resource('Faqs', FaqsController::class);
     Route::resource('Policies', PoliciesController::class);
+
+    Route::get('/dashboard',[DashboardController::class,'index'])->name("dashboard");
+    Route::get('/doctor-reviews-report',[DashboardController::class,'doctorReviewReports']);
+    Route::get('/doctor-booking-report',[DashboardController::class,'doctorBookingReports']);
+    Route::get('/doctor-booking-report/doctors',[DashboardController::class,'doctorBooking']);
+    Route::get('/doctor-reviews-report/doctors',[DashboardController::class,'doctorReviews']);
 
 
 });
