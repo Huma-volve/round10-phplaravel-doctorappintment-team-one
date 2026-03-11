@@ -76,7 +76,7 @@
                     </a>
                     <hr class="dropdown-divider">
                @endforelse
-               <a href="{{ route('admin.notifications.index') }}" class="dropdown-item text-center">See all notifications</a>
+               <a href="{{ route('notifications.index') }}" class="dropdown-item text-center">See all notifications</a>
           </div>
      </div>
      <div class="nav-item dropdown">
