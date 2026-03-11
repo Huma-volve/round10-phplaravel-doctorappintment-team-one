@@ -15,7 +15,8 @@ class paymentController extends Controller
     }
     public function showPayment($id){
  $payment = Payment::where('booking_id', $id)->first();
-                       return view('show.showpaymentdetail',compact('payment'));
+ dd($payment);
+                       return view('show.showpaymentDetail',compact('payment'));
 
     }
 }
