@@ -82,6 +82,9 @@
     <!-- Template Javascript -->
     <script src="{{asset('dashboard/js/main.js')}}"></script>
 
+    @yield('js')
+
+{{-- TABLE --}}
     {{-- TABLE --}}
 
 
