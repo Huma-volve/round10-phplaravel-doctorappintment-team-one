@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Faker\Provider\ar_EG\Payment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\Payment;
 class Booking extends Model
 {
     use HasFactory;
@@ -29,7 +28,7 @@ class Booking extends Model
         return $this->belongsTo(DoctorTimeSlot::class, 'time_slot_id');
     }
 
-    public function payments()
+    public function payment()
     {
         return $this->hasMany(Payment::class);
     }

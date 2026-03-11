@@ -16,6 +16,7 @@
           </div>
           <div class="navbar-nav w-100">
           <a href="index.html" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+          @if(auth()->check() && auth()->user()->role=='admin')
           <div class="nav-item dropdown">
                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-users"></i></i>Users</a>
                <div class="dropdown-menu bg-transparent border-0">
@@ -24,8 +25,13 @@
                </div>
           </div>
           <a href="{{ route('bookingtable') }}" class="nav-item nav-link"><i class="fa-solid fa-table"></i>Booking</a>
-          <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
-          <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
+          @endif
+            @if(auth()->check() && auth()->user()->role=='doctor')
+          <a href="{{ route('doctorpanal') }}" class="nav-item nav-link"><i class="fa-solid fa-table"></i>mybooking</a>
+           @endif
+              @if(auth()->check() && auth()->user()->role=='admin')
+          <a href="{{ route('admin.specialties.index') }}" class="nav-item nav-link"><i class="fa-solid fa-bars"></i>Specialties</a>
+          @endif
           <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
           <div class="nav-item dropdown">
                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
@@ -36,12 +42,7 @@
                     <a href="blank.html" class="dropdown-item">Blank Page</a>
                </div>
           </div>
-          <div class="navbar-nav w-100">
-              @if(auth()->check() && auth()->user()->role === 'admin')
-                <a  href="{{ route('admin.doctors.create') }}" class="nav-item nav-link "><i class="fa fa-tachometer-alt me-2"></i>Add Doctor</a>
-                <a class="nav-link" href="{{ route('admin.specialties.index') }}">Specialties</a>
-              @endif
-          </div>
+        
           </div>
      </nav>
 </div>
