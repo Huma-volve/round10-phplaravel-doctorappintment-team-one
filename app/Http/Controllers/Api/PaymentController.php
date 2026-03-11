@@ -15,7 +15,7 @@ class PaymentController extends Controller
 {
  public function createPaymentIntent(Request $request){
     $valdiated=$request->validate([
-        'booking_id'=>'required|exists:Bookings,id'
+        'booking_id'=>'required|exists:bookings,id'
     ]);
     $booking=Booking::findOrFail($valdiated['booking_id']);
       if ($booking->status != 'pending_payment') {
