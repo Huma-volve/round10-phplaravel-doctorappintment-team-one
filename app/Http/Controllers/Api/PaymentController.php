@@ -15,14 +15,14 @@ class PaymentController extends Controller
 {
  public function createPaymentIntent(Request $request){
     $valdiated=$request->validate([
-        'booking_id'=>'required|exists:Bookings,id'
+        'booking_id'=>'required|exists:bookings,id'
     ]);
     $booking=Booking::findOrFail($valdiated['booking_id']);
       if ($booking->status != 'pending_payment') {
             return response()->json([
                 'message' => 'Booking is not pending payment.'
             ], 400);
-        
+
  }
    Stripe::setApiKey(config('services.stripe.secret'));
 
@@ -52,7 +52,7 @@ class PaymentController extends Controller
         ], 201);
 
  }
- 
+
  public function webhook (Request $request){
     $pay=$request->getContent();
     $event=json_decode($pay,true);
@@ -66,7 +66,7 @@ $booking = Booking::findOrFail($payment->booking_id);
             $booking->status='confirmed';
             $booking->payment_status ='paid';
             $booking->save();
-            
+
             // Notify patient of successful payment
             app(NotificationService::class)->notify(
                 $booking->patient_id,
@@ -77,7 +77,7 @@ $booking = Booking::findOrFail($payment->booking_id);
                 ['booking_id' => $booking->id,
                  'payment_id' => $payment->id]
             );
-            
+
             // Notify admin of successful payment
             app(NotificationService::class)->notifyAdmin(
                 'payment',
@@ -94,7 +94,7 @@ $booking = Booking::findOrFail($payment->booking_id);
         return response()->json(['message' => 'Webhook received.'], 200);
 
  }
- 
- 
- 
+
+
+
  }

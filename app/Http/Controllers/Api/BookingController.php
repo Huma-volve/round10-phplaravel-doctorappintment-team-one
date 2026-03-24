@@ -51,7 +51,7 @@ class Bookingcontroller extends Controller
         $slots->status = 'booked';
 
         $slots->save();
-        
+
         // Notify doctor
         app(NotificationService::class)->notify(
             $slots->doctor->user_id,
@@ -65,7 +65,7 @@ class Bookingcontroller extends Controller
                 'time_slot_id' => $slots->id,
             ]
         );
-        
+
         // Notify admin
         app(NotificationService::class)->notifyAdmin(
             'booking',
@@ -129,10 +129,10 @@ class Bookingcontroller extends Controller
 
         $booking->status = 'cancelled_by_patient';
         $booking->save();
-        
+
         // Load relationships for response
         $booking->load(['patient', 'doctor', 'doctor.user', 'timeSlot', 'review']);
-        
+
         // Notify doctor
         app(NotificationService::class)->notify(
             $booking->doctor->user_id,
@@ -146,7 +146,7 @@ class Bookingcontroller extends Controller
                 'time_slot_id' => $slot->id,
             ]
         );
-        
+
         // Notify admin
         app(NotificationService::class)->notifyAdmin(
             'cancellation',
@@ -168,12 +168,10 @@ class Bookingcontroller extends Controller
     }
 
 
-
-
     public function update(Request $request, $id)
     {
         $user = $request->user();
-        
+
         $valdiate = $request->validate([
             'new_booking_id' => 'required|exists:doctor_time_slots,id'
         ]);
@@ -216,10 +214,10 @@ class Bookingcontroller extends Controller
 
         $newSlot->status = 'booked';
         $newSlot->save();
-        
+
         // Load relationships for response
         $oldBooking->load(['patient', 'doctor', 'doctor.user', 'timeSlot', 'review']);
-        
+
         // Notify doctor
         app(NotificationService::class)->notify(
             $oldBooking->doctor->user_id,
@@ -233,7 +231,7 @@ class Bookingcontroller extends Controller
                 'time_slot_id' => $newSlot->id,
             ]
         );
-        
+
         // Notify admin
         app(NotificationService::class)->notifyAdmin(
             'booking',
